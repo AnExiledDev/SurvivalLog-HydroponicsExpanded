@@ -1,0 +1,447 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using GameCore.HotUpdate;
+using GameCore.HotUpdate.Battle.Logic;
+using Il2CppInterop.Runtime.InteropTypes;
+using HydroponicsExpanded.Core;
+using Il2CppDictionary = Il2CppSystem.Collections.Generic;
+using Il2CppInts = Il2CppSystem.Collections.Generic.List<int>;
+
+namespace HydroponicsExpanded.Adapters;
+
+/// <summary>
+/// Writes the stations' rows and text into the game's tables once they are loaded, then rebuilds the game's lookups
+/// that were made from them, and brings the stations into a run: the flowerpot shops before the disaster sell them next
+/// to the grow box of the same size. It writes again when the game loads a table afresh or a setting changes, over its
+/// own rows where they already are. It also points the Hydroponic Station (Large) at the mod's model while that setting is
+/// on, and every few seconds shows a station's recipe to a player who was already shown the Large Station's.
+/// </summary>
+internal sealed class StationTables
+{
+    private const float CheckSeconds = 1f;
+    private const float RevealSeconds = 5f;
+
+    // The six row tables, the shop lists, and the two languages.
+    private const int Watched = 9;
+
+    private readonly Action<string> _log;
+    private readonly IntPtr[] _seen = new IntPtr[Watched];
+    private readonly IntPtr[] _applied = new IntPtr[Watched];
+    private readonly List<Reveal> _reveals = new();
+    private HashSet<IntPtr> _ours = new();
+    private IReadOnlyList<StationSettings>? _appliedSettings;
+    private bool? _appliedNewLook;
+    private LargeLook? _largeStock;
+    private float _nextCheckAt;
+    private float _nextRevealAt;
+
+    public StationTables(Action<string> log)
+    {
+        _log = log;
+    }
+
+    public void Tick(float now)
+    {
+        if (now >= _nextRevealAt)
+        {
+            _nextRevealAt = now + RevealSeconds;
+            ShowRecipes();
+        }
+
+        if (now < _nextCheckAt) return;
+
+        _nextCheckAt = now + CheckSeconds;
+
+        var config = GameSingleton.Existing<ConfigManager>();
+        var english = config?.customCache?.EnglishLanguageMap;
+        var chinese = config?.customCache?.ChineseLanguageMap;
+
+        if (config == null || english == null || chinese == null) return;
+
+        KeepDyeable(config);
+
+        var tables = new Tables(config);
+
+        if (!tables.HasRows) return;
+
+        tables.Pointers(_seen, english, chinese);
+
+        var settings = CurrentSettings.Current;
+        var isNewLook = CurrentSettings.NewLook;
+
+        if (ReferenceEquals(settings, _appliedSettings) && isNewLook == _appliedNewLook && _seen.AsSpan().SequenceEqual(_applied)) return;
+
+        _seen.CopyTo(_applied, 0);
+        _appliedSettings = settings;
+        _appliedNewLook = isNewLook;
+        Write(config, tables, english, chinese, settings);
+        Step("Large Station look", () => SetLargeLook(tables, isNewLook));
+    }
+
+    private void Write(ConfigManager config, Tables tables, Il2CppDictionary.Dictionary<string, string> english, Il2CppDictionary.Dictionary<string, string> chinese, IReadOnlyList<StationSettings> settings)
+    {
+        var views = new Dictionary<Table, ITableView>
+        {
+            [Table.Item] = new TableView<Config_Item>(tables.Items!, () => new Config_Item()),
+            [Table.Furniture] = new TableView<Config_Furniture>(tables.Furniture!, () => new Config_Furniture()),
+            [Table.Plant] = new TableView<Config_FurniturePlant>(tables.Plants!, () => new Config_FurniturePlant()),
+            [Table.Recipe] = new TableView<Config_ProductionList>(tables.Recipes!, () => new Config_ProductionList()),
+            [Table.Action] = new TableView<Config_Action>(tables.Actions!, () => new Config_Action()),
+            [Table.Effect] = new TableView<Config_Effect>(tables.Effects!, () => new Config_Effect()),
+        };
+
+        // Our rows from the last write, where they still are: a table loaded afresh has none of them.
+        var before = _ours;
+
+        _ours = new HashSet<IntPtr>();
+
+        foreach (var kind in StationRows.All)
+        foreach (var (table, id) in RowsOf(kind.Ids))
+            views[table].Keep(id, before, _ours);
+
+        var written = new List<(StationKind Kind, StationSettings Settings, int[] Materials)>();
+        var items = tables.Items!;
+        var recipes = tables.Recipes!;
+
+        for (var i = 0; i < StationRows.All.Count; i++)
+        {
+            var kind = StationRows.All[i];
+            var wanted = settings[i];
+
+            // The earlier stations' materials as written, and the later ones' defaults, which each may fall back to.
+            var taken = written.Select(done => (IReadOnlyList<int>)done.Materials).Concat(StationRows.All.Skip(i + 1).Select(later => (IReadOnlyList<int>)MaterialList.Standard(later.Defaults.Materials))).ToList();
+            var (materials, problem) = MaterialList.Choose(wanted.Materials, kind.Defaults.Materials, items.ContainsKey, list => RecipeUsing(recipes, list), taken);
+
+            if (problem != null) _log($"{kind.Name}: {problem}, so it takes its default materials");
+
+            var plan = StationRows.Plan(kind, materials, wanted);
+            var problems = StationRows.Problems(plan, (table, id) => views[table].SlotAt(id, _ours), list => RecipeUsing(recipes, list));
+
+            if (problems.Count > 0)
+            {
+                foreach (var reason in problems) _log($"cannot add the {kind.Name}: {reason}");
+
+                continue;
+            }
+
+            SetTexts(plan.Texts, english, chinese);
+
+            var refused = new List<string>();
+
+            foreach (var row in plan.Rows) refused.AddRange(views[row.Table].Write(row, _ours));
+
+            foreach (var reason in refused) _log($"{kind.Name} field not set: {reason}");
+
+            written.Add((kind, wanted, materials));
+        }
+
+        if (written.Count == 0) return;
+
+        // The recipe lookup is built once from the recipe table, and the "where to get it" lookups rebuild themselves
+        // when this one is empty.
+        config.InitProductionListMap();
+        config._furnitureToPackageItems = null;
+
+        var kinds = written.Select(done => done.Kind).ToList();
+
+        Step("shop lists", () => AddToShops(tables.Shops, written.Select(done => (done.Kind, done.Settings.ShopStock)).ToList()));
+        ShopStock.Restock(written.Select(done => (done.Kind.Ids.Furniture, done.Settings.ShopStock)).ToList());
+        KeepReveals(recipes, kinds);
+
+        foreach (var (kind, wanted, materials) in written)
+        {
+            var ids = kind.Ids;
+
+            _log($"{kind.Name} added: item {ids.Item}, furniture {ids.Furniture}, recipe {ids.Recipe}, plant row {ids.Plant}; power {wanted.PowerCost}, growth boost {wanted.GrowthBoost}, materials {MaterialText(materials)}, price {wanted.ShopPrice}, stock {wanted.ShopStock}");
+        }
+    }
+
+    /// <summary>
+    /// Puts the stations' prefab names on the game's list of furniture that can be dyed, which it loads once a run
+    /// starts, when the grow box or Large Station it stands in for is on it, and makes the game rebuild its lookup from
+    /// it. A few lookups a second while they are there.
+    /// </summary>
+    private void KeepDyeable(ConfigManager config)
+    {
+        var names = config._dyeableResNames;
+
+        if (names == null) return;
+
+        var stale = false;
+
+        foreach (var kind in StationRows.All)
+            if (names.Contains(kind.StockPrefab) && !names.Contains(kind.ResName)) stale |= names.Add(kind.ResName);
+
+        if (names.Contains(StationRows.LargeStockPrefab) && !names.Contains(StationRows.LargeResName)) stale |= names.Add(StationRows.LargeResName);
+
+        // A lookup built before our rows were written lacks them too.
+        var ids = config._dyeableFurnitureIds;
+        var furniture = config._Config_Furniture_Dict;
+
+        if (ids != null && furniture != null && config._dyeableSourceDict?.Pointer == furniture.Pointer)
+            foreach (var kind in StationRows.All)
+                if (furniture.ContainsKey(kind.Ids.Furniture) && !ids.Contains(kind.Ids.Furniture)) stale = true;
+
+        if (!stale) return;
+
+        // The game rebuilds its list of dyeable ids when this no longer points at the furniture table.
+        config._dyeableSourceDict = null;
+        _log("the stations can be dyed like the furniture they stand in for");
+    }
+
+    /// <summary>Lists each station in the shops that sell its grow box, with its stock, or takes it off when its stock is 0.</summary>
+    private void AddToShops(Il2CppDictionary.Dictionary<int, Config_ShopFurniture>? shops, IReadOnlyList<(StationKind Kind, int Stock)> wanted)
+    {
+        if (shops == null || shops.Count == 0) return;
+
+        foreach (var id in wanted.SelectMany(pair => pair.Kind.Shops).Distinct())
+        {
+            if (!shops.ContainsKey(id))
+            {
+                _log($"shop {id} is missing, so it does not sell the stations");
+
+                continue;
+            }
+
+            var shop = shops[id];
+            var here = wanted.Where(pair => pair.Kind.Shops.Contains(id)).Select(pair => (pair.Kind.Ids.Furniture, pair.Stock)).ToList();
+            var ours = here.Select(pair => pair.Furniture).ToArray();
+
+            if (Unlocks.Shop(ToArray(shop.ItemIdList), ToArray(shop.ItemCountList), ours, here) is not { } lists) continue;
+
+            shop.ItemIdList = RowFields.ToList(lists.Ids);
+            shop.ItemCountList = RowFields.ToList(lists.Counts);
+        }
+    }
+
+    /// <summary>
+    /// Points the Hydroponic Station (Large)'s furniture row and its package at the mod's model and icon, or back at the
+    /// game's own. The game's values are read the first time and kept, so turning it off puts back what was there.
+    /// Stations already built keep the model they were built with until the save is loaded again.
+    /// </summary>
+    private void SetLargeLook(Tables tables, bool isNewLook)
+    {
+        var furniture = tables.Furniture!;
+        var items = tables.Items!;
+
+        if (!furniture.ContainsKey(StationRows.LargeFurniture) || !items.ContainsKey(StationRows.LargeItem))
+        {
+            _log($"furniture {StationRows.LargeFurniture} or item {StationRows.LargeItem} is missing, so the Hydroponic Station (Large) keeps its look");
+
+            return;
+        }
+
+        var station = furniture[StationRows.LargeFurniture];
+        var package = items[StationRows.LargeItem];
+
+        // A table loaded afresh holds the game's values again, so they are read again from it.
+        if (_largeStock == null || station.ResName != StationRows.LargeResName) _largeStock = new LargeLook(station.ResName, station.ICON, package.WebIcon);
+
+        var look = isNewLook ? new LargeLook(StationRows.LargeResName, StationRows.LargeWebIcon, StationRows.LargeWebIcon) : _largeStock;
+
+        if (station.ResName == look.ResName && station.ICON == look.Icon && package.WebIcon == look.WebIcon) return;
+
+        station.ResName = look.ResName;
+        station.ICON = look.Icon;
+        package.WebIcon = look.WebIcon;
+        _log(isNewLook ? "the Hydroponic Station (Large) has the new look" : "the Hydroponic Station (Large) has the game's own look");
+    }
+
+    private void KeepReveals(Il2CppDictionary.Dictionary<int, Config_ProductionList> recipes, IReadOnlyList<StationKind> kinds)
+    {
+        _reveals.Clear();
+
+        foreach (var kind in kinds)
+            if (recipes.ContainsKey(kind.Ids.Recipe) && recipes.ContainsKey(kind.RevealedWith)) _reveals.Add(new Reveal(kind, recipes[kind.Ids.Recipe], recipes[kind.RevealedWith]));
+    }
+
+    /// <summary>
+    /// Shows a station's recipe to a player who has the Large Station's: a run that was past it before the mod was
+    /// added or updated, or a run whose materials setting changed, since the game remembers a recipe by its materials.
+    /// </summary>
+    private void ShowRecipes()
+    {
+        if (_reveals.Count == 0) return;
+
+        try
+        {
+            var tool = GameSingleton.Existing<BattleLogicWorld>()?._ToolTableManager;
+
+            if (tool == null) return;
+
+            foreach (var reveal in _reveals)
+            {
+                if (tool.IsProductionRevealedByRecord(reveal.Ours) || !tool.IsProductionRevealedByRecord(reveal.ComesWith)) continue;
+
+                var ids = new Il2CppInts();
+
+                ids.Add(reveal.Kind.Ids.Recipe);
+                tool.AddProductionRecords(ids);
+                _log($"{reveal.Kind.Name} recipe shown, since recipe {reveal.Kind.RevealedWith} already is");
+            }
+        }
+        catch (Exception ex)
+        {
+            _reveals.Clear();
+            _log($"cannot show the stations' recipes in a run already going, so they wait for the Large Station's: {ex}");
+        }
+    }
+
+    private void Step(string what, Action step)
+    {
+        try
+        {
+            step();
+        }
+        catch (Exception ex)
+        {
+            _log($"the stations' {what} could not be changed: {ex}");
+        }
+    }
+
+    private int? RecipeUsing(Il2CppDictionary.Dictionary<int, Config_ProductionList> recipes, IReadOnlyList<int> materials)
+    {
+        var key = StationRows.MaterialKey(materials);
+
+        foreach (var pair in recipes)
+        {
+            var recipe = pair.Value;
+
+            if (recipe == null || _ours.Contains(recipe.Pointer) || recipe.MaterialList == null || recipe.MaterialList.Count != materials.Count) continue;
+
+            if (StationRows.MaterialKey(ToArray(recipe.MaterialList)) == key) return pair.Key;
+        }
+
+        return null;
+    }
+
+    private static void SetTexts(IEnumerable<Text> texts, Il2CppDictionary.Dictionary<string, string> english, Il2CppDictionary.Dictionary<string, string> chinese)
+    {
+        foreach (var text in texts)
+        {
+            english[text.Key] = text.En;
+            chinese[text.Key] = text.Zh;
+        }
+    }
+
+    private static string MaterialText(IEnumerable<int> materials) => string.Join(", ", materials.GroupBy(id => id).Select(group => $"{group.Key}:{group.Count()}"));
+
+    private static (Table Table, int Id)[] RowsOf(RowIds ids) => new[]
+    {
+        (Table.Item, ids.Item),
+        (Table.Furniture, ids.Furniture),
+        (Table.Plant, ids.Plant),
+        (Table.Recipe, ids.Recipe),
+        (Table.Action, ids.Action),
+        (Table.Effect, ids.Effect),
+    };
+
+    private static int[] ToArray(Il2CppInts? list)
+    {
+        if (list == null) return Array.Empty<int>();
+
+        var values = new int[list.Count];
+
+        for (var i = 0; i < values.Length; i++) values[i] = list[i];
+
+        return values;
+    }
+
+    private sealed record LargeLook(string ResName, string Icon, string WebIcon);
+
+    private sealed record Reveal(StationKind Kind, Config_ProductionList Ours, Config_ProductionList ComesWith);
+
+    /// <summary>The tables the mod writes, read from the game once a check.</summary>
+    private sealed class Tables
+    {
+        public Tables(ConfigManager config)
+        {
+            Items = config._Config_Item_Dict;
+            Furniture = config._Config_Furniture_Dict;
+            Plants = config._Config_FurniturePlant_Dict;
+            Recipes = config._Config_ProductionList_Dict;
+            Actions = config._Config_Action_Dict;
+            Effects = config._Config_Effect_Dict;
+            Shops = config._Config_ShopFurniture_Dict;
+        }
+
+        public Il2CppDictionary.Dictionary<int, Config_Item>? Items { get; }
+        public Il2CppDictionary.Dictionary<int, Config_Furniture>? Furniture { get; }
+        public Il2CppDictionary.Dictionary<int, Config_FurniturePlant>? Plants { get; }
+        public Il2CppDictionary.Dictionary<int, Config_ProductionList>? Recipes { get; }
+        public Il2CppDictionary.Dictionary<int, Config_Action>? Actions { get; }
+        public Il2CppDictionary.Dictionary<int, Config_Effect>? Effects { get; }
+        public Il2CppDictionary.Dictionary<int, Config_ShopFurniture>? Shops { get; }
+
+        /// <summary>Whether all six row tables are loaded. The others are optional: without one, its step is skipped.</summary>
+        public bool HasRows => IsLoaded(Items) && IsLoaded(Furniture) && IsLoaded(Plants) && IsLoaded(Recipes) && IsLoaded(Actions) && IsLoaded(Effects);
+
+        public void Pointers(IntPtr[] into, Il2CppObjectBase english, Il2CppObjectBase chinese)
+        {
+            into[0] = Pointer(Items);
+            into[1] = Pointer(Furniture);
+            into[2] = Pointer(Plants);
+            into[3] = Pointer(Recipes);
+            into[4] = Pointer(Actions);
+            into[5] = Pointer(Effects);
+            into[6] = Pointer(Shops);
+            into[7] = english.Pointer;
+            into[8] = chinese.Pointer;
+        }
+
+        private static bool IsLoaded<T>(Il2CppDictionary.Dictionary<int, T>? table) => table != null && table.Count > 0;
+
+        private static IntPtr Pointer(Il2CppObjectBase? table) => table?.Pointer ?? IntPtr.Zero;
+    }
+
+    private interface ITableView
+    {
+        Slot SlotAt(int id, HashSet<IntPtr> ours);
+
+        /// <summary>Carries the row at <paramref name="id"/> into <paramref name="next"/> when it was one of ours.</summary>
+        void Keep(int id, HashSet<IntPtr> before, HashSet<IntPtr> next);
+
+        /// <summary>Writes the row, over our own row at its id when there is one, and returns the fields that could not be set.</summary>
+        List<string> Write(RowPlan plan, HashSet<IntPtr> ours);
+    }
+
+    private sealed class TableView<T> : ITableView where T : Il2CppObjectBase
+    {
+        private readonly Il2CppDictionary.Dictionary<int, T> _table;
+        private readonly Func<T> _make;
+
+        public TableView(Il2CppDictionary.Dictionary<int, T> table, Func<T> make)
+        {
+            _table = table;
+            _make = make;
+        }
+
+        public Slot SlotAt(int id, HashSet<IntPtr> ours)
+        {
+            if (!_table.ContainsKey(id)) return Slot.Empty;
+
+            return ours.Contains(_table[id].Pointer) ? Slot.Ours : Slot.Stock;
+        }
+
+        public void Keep(int id, HashSet<IntPtr> before, HashSet<IntPtr> next)
+        {
+            if (_table.ContainsKey(id) && _table[id] is { } row && before.Contains(row.Pointer)) next.Add(row.Pointer);
+        }
+
+        public List<string> Write(RowPlan plan, HashSet<IntPtr> ours)
+        {
+            // Writing over our own row keeps every reference the game already holds to it up to date.
+            var row = SlotAt(plan.Id, ours) == Slot.Ours ? _table[plan.Id] : _make();
+
+            RowFields.CopyAll(_table[plan.CopyFrom], row);
+
+            var refused = plan.Fields.Select(field => RowFields.Set(row, field.Name, field.Value)).OfType<string>().ToList();
+
+            _table[plan.Id] = row;
+            ours.Add(row.Pointer);
+
+            return refused;
+        }
+    }
+}

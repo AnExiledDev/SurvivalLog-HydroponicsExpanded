@@ -1,0 +1,52 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>net6.0</TargetFramework>
+    <AssemblyName>HydroponicsExpanded</AssemblyName>
+    <RootNamespace>HydroponicsExpanded</RootNamespace>
+    <LangVersion>latest</LangVersion>
+    <Nullable>enable</Nullable>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <GenerateDocumentationFile>false</GenerateDocumentationFile>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+    <GameDir Condition="'$(GameDir)' == ''">D:\SteamLibrary\steamapps\common\Survival Log</GameDir>
+    <BepInExCore>$(GameDir)\BepInEx\core</BepInExCore>
+    <Interop>$(GameDir)\BepInEx\interop</Interop>
+    <ToolkitDll Condition="'$(ToolkitDll)' == ''">D:\devnew\game-mods\SurvivalLog\mods\sl-exiled-toolkit\src\ExiledToolkit\bin\Release\ExiledToolkit.dll</ToolkitDll>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Reference Include="$(BepInExCore)\BepInEx.Core.dll" Private="false" />
+    <Reference Include="$(BepInExCore)\BepInEx.Unity.IL2CPP.dll" Private="false" />
+    <Reference Include="$(BepInExCore)\0Harmony.dll" Private="false" />
+    <Reference Include="$(BepInExCore)\Il2CppInterop.Runtime.dll" Private="false" />
+    <Reference Include="$(BepInExCore)\Il2CppInterop.Common.dll" Private="false" />
+    <Reference Include="$(Interop)\HotUpdate.dll" Private="false" />
+    <Reference Include="$(Interop)\Il2Cppmscorlib.dll" Private="false" />
+    <Reference Include="$(Interop)\Il2CppSystem.Core.dll" Private="false" />
+    <Reference Include="$(Interop)\UnityEngine.CoreModule.dll" Private="false" />
+    <Reference Include="$(Interop)\UnityEngine.PhysicsModule.dll" Private="false" />
+    <Reference Include="$(Interop)\AOT.dll" Private="false" />
+    <Reference Include="$(ToolkitDll)" Private="false" />
+  </ItemGroup>
+
+  <!-- The stations' models and icons travel inside the DLL, so installing the mod is still one file. -->
+  <ItemGroup>
+    <EmbeddedResource Include="..\..\assets\HydroponicStationSmall.glb" LogicalName="HydroponicStationSmall.glb" />
+    <EmbeddedResource Include="..\..\assets\UI_Item_Icon_Hydroponic_S.png" LogicalName="UI_Item_Icon_Hydroponic_S.png" />
+    <EmbeddedResource Include="..\..\assets\HydroponicStationMedium.glb" LogicalName="HydroponicStationMedium.glb" />
+    <EmbeddedResource Include="..\..\assets\UI_Item_Icon_Hydroponic_M.png" LogicalName="UI_Item_Icon_Hydroponic_M.png" />
+    <EmbeddedResource Include="..\..\assets\HydroponicStationLarge.glb" LogicalName="HydroponicStationLarge.glb" />
+    <EmbeddedResource Include="..\..\assets\UI_Item_Icon_Hydroponic_L.png" LogicalName="UI_Item_Icon_Hydroponic_L.png" />
+  </ItemGroup>
+
+  <!-- What the Mod Manager's Mods screen shows about this mod. -->
+  <ItemGroup>
+    <AssemblyMetadata Include="ModManager.Name" Value="Hydroponics Expanded&#10;水培扩展" />
+    <AssemblyMetadata Include="ModManager.Description" Value="Adds Small and Medium Hydroponic Stations that grow crops with no care, like the Large one, and gives all three a new look.&#10;新增小型和中型水培站，和大型水培站一样无需照料即可种植作物，三种水培站都换上新模型。" />
+    <AssemblyMetadata Include="ModManager.Author" Value="AnExiledDev" />
+    <AssemblyMetadata Include="ModManager.Category" Value="Gameplay" />
+    <AssemblyMetadata Include="ModManager.GameVersion" Value="1.1.20151" />
+  </ItemGroup>
+
+</Project>
