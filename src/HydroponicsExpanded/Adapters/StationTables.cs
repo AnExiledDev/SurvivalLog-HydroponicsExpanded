@@ -72,11 +72,41 @@ internal sealed class StationTables
 
         if (ReferenceEquals(settings, _appliedSettings) && isNewLook == _appliedNewLook && _seen.AsSpan().SequenceEqual(_applied)) return;
 
+        var isChange = _appliedSettings != null && !ReferenceEquals(settings, _appliedSettings);
+
         _seen.CopyTo(_applied, 0);
         _appliedSettings = settings;
         _appliedNewLook = isNewLook;
         Write(config, tables, english, chinese, settings);
         Step("Large Station look", () => SetLargeLook(tables, isNewLook));
+
+        // A plant growing in a station worked out its growth time when it was planted; a new growth boost reaches it now.
+        if (isChange) Step("plants already growing", RegrowPlanted);
+    }
+
+    /// <summary>
+    /// Has every plant growing in one of the stations work out its growth time again from the rows as they are now. The
+    /// game's own step for a power change does this and keeps the share of growth already done.
+    /// </summary>
+    private void RegrowPlanted()
+    {
+        var furnitures = GameSingleton.Existing<BattleLogicWorld>()?._AgentManager?.GetAllFurnitures();
+
+        if (furnitures == null) return;
+
+        var plantRows = StationRows.All.Select(kind => kind.Ids.Plant).ToHashSet();
+        var count = 0;
+
+        for (var i = 0; i < furnitures.Count; i++)
+        {
+            if (furnitures[i] is not { } furniture || AgentTools.GetAgentComponent<PlantComponent>(furniture) is not { } plant) continue;
+            if (!plantRows.Contains(plant.FurniturePlantConfigId)) continue;
+
+            plant.RecalcGrowthTimeForPowerChange();
+            count++;
+        }
+
+        if (count > 0) _log($"{count} stations' plants brought up to the new growth boost");
     }
 
     private void Write(ConfigManager config, Tables tables, Il2CppDictionary.Dictionary<string, string> english, Il2CppDictionary.Dictionary<string, string> chinese, IReadOnlyList<StationSettings> settings)

@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.1.1
+
+- A change to `GrowthBoost` now reaches plants already growing, keeping the growth they have made.
+
 ## 0.1.0
 
 - First build: a Small and a Medium Hydroponic Station, each with its own model and icon, and a new look for the game's Hydroponic Station (Large).
