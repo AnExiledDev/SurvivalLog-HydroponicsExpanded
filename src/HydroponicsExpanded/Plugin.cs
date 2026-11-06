@@ -13,7 +13,7 @@ namespace HydroponicsExpanded;
 public sealed class Plugin : BasePlugin
 {
     private const string Guid = "com.dev.survivallog.hydroponicsexpanded";
-    private const string Version = "0.1.1";
+    private const string Version = "0.1.2";
 
     public override void Load()
     {
@@ -77,9 +77,10 @@ public sealed class Plugin : BasePlugin
             $"How much faster plants grow in the {name} while it has power: 0.5 is half as fast again, the same as the Hydroponic Station (Large). The {growBox} gives 0.3.\n" +
             $"{chinese}通电时植物生长加快多少：0.5 表示快一半，和全光谱水培站（大）一样。{growBoxChinese}是 0.3。",
             new AcceptableValueRange<float>(0f, 5f)));
-        var materials = Config.Bind(section, "Materials", defaults.Materials,
+        var materials = Config.Bind(section, "Materials", defaults.Materials, new ConfigDescription(
             $"What crafting a {name} Package takes, written as item id:count pairs split by commas. 20102 is Container, 20104 Wire, 20210 Electronic Components, 20361 Iron Rod and 20362 Iron Parts. Up to {MaterialList.MostKinds} different items. A list the game cannot use (an unknown item, or the same materials as another recipe) falls back to the default, and LogOutput.log says why.\n" +
-            $"制作{chinese}包裹所需的材料，写成「物品id:数量」，用逗号隔开。20102 是容器，20104 是铁丝，20210 是电器元件，20361 是铁棍，20362 是铁制零件。最多 {MaterialList.MostKinds} 种物品。游戏用不了的清单（物品不存在，或和别的配方材料相同）会改用默认值，原因写在 LogOutput.log 里。");
+            $"制作{chinese}包裹所需的材料，写成「物品id:数量」，用逗号隔开。20102 是容器，20104 是铁丝，20210 是电器元件，20361 是铁棍，20362 是铁制零件。最多 {MaterialList.MostKinds} 种物品。游戏用不了的清单（物品不存在，或和别的配方材料相同）会改用默认值，原因写在 LogOutput.log 里。",
+            null, "ModManager.Control=ItemCounts", $"ModManager.MaxKinds={MaterialList.MostKinds}", $"ModManager.MaxCount={MaterialList.MostOfOne}", $"ModManager.Makes={kind.Ids.Item}"));
         var price = Config.Bind(section, "ShopPrice", defaults.ShopPrice, new ConfigDescription(
             $"What the flowerpot shops ask for a {name} before the disaster. The {growBox} costs {growBoxPrice} there and the Hydroponic Station (Large) 150.\n" +
             $"灾难前花盆商店卖{chinese}的价格。{growBoxChinese}在那里卖 {growBoxPrice}，全光谱水培站（大）卖 150。",

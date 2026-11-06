@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.1.2
+
+- With the Mod Manager, each station's `Materials` shows as item cards with a picker, and the station's package beside them with its pieces, weight and value.
+- Made for Survival Log 1.1.20151.
+
 ## 0.1.1
 
 - A change to `GrowthBoost` now reaches plants already growing, keeping the growth they have made.
