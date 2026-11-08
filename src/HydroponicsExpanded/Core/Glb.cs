@@ -43,6 +43,19 @@ public sealed record Model(IReadOnlyList<ModelPart> Parts, IReadOnlyList<ModelMa
         return (min, max);
     }
 
+    /// <summary>The height of the lowest vertex drawn in the named material, or null when nothing is.</summary>
+    public float? Lowest(string material)
+    {
+        float? lowest = null;
+
+        foreach (var part in Parts)
+            foreach (var mesh in part.Meshes.Where(mesh => Materials[mesh.Material].Name == material))
+                foreach (var position in mesh.Positions)
+                    lowest = Math.Min(lowest ?? float.MaxValue, position.Y + part.Pivot.Y);
+
+        return lowest;
+    }
+
     /// <summary>
     /// The corners of the box around the points that touch the ground: the model's base. Parts that reach
     /// out further on one side than the other, so the base, not the whole model, is what goes in the middle of a spot.

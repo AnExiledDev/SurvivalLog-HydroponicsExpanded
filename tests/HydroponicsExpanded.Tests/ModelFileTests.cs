@@ -87,6 +87,29 @@ public class ModelFileTests
         Assert.InRange(lowest - (PotTop + tallestCrop), 0.03f, 0.25f);
     }
 
+    // The stock prefab's light sources go just under the model's own grow light bar, so each station's light starts
+    // at its own bar: the Small's lowest, then the Medium's, then the Large's, the height the stock lamp hung at.
+    [Fact]
+    public void EachStationsLightStartsAtItsOwnBar()
+    {
+        var bars = new[] { "Small", "Medium", "Large" }.Select(size => Load(size).Lowest("GrowLED")).ToList();
+
+        Assert.All(bars, bar => Assert.NotNull(bar));
+        Assert.True(bars[0] < bars[1] && bars[1] < bars[2], $"bars at {string.Join(", ", bars)}");
+        Assert.InRange(bars[2]!.Value - bars[0]!.Value, 0.8f, 1.5f);
+        Assert.Null(Load("Small").Lowest("NoSuchMaterial"));
+
+        // The light sources go under the bar's lowest face, not inside or above it.
+        foreach (var size in new[] { "Small", "Medium", "Large" })
+        {
+            var model = Load(size);
+            var lights = model.Parts.Single(part => part.Name == "Lights");
+            var heights = lights.Meshes.Where(mesh => model.Materials[mesh.Material].Name == "GrowLED").SelectMany(mesh => mesh.Positions).Select(p => p.Y + lights.Pivot.Y).ToList();
+
+            Assert.Equal(heights.Min(), model.Lowest("GrowLED"));
+        }
+    }
+
     // The game hangs a plant that fills several spots at the middle of those spots, taken in their order in the grow
     // box (the Large's front pair, then its back pair). Each seat set's pots must be right there, so the crop grows out
     // of a pot, with the plant's foot inside the pot rather than over a bay divider or floating above the rim.

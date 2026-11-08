@@ -128,7 +128,8 @@ internal sealed class StationTables
         _ours = new HashSet<IntPtr>();
 
         foreach (var kind in StationRows.All)
-        foreach (var (table, id) in RowsOf(kind.Ids))
+        foreach (var ids in Dyes.All.Select(dye => Dyes.Ids(kind.Ids, dye)).Prepend(kind.Ids))
+        foreach (var (table, id) in RowsOf(ids))
             views[table].Keep(id, before, _ours);
 
         var written = new List<(StationKind Kind, StationSettings Settings, int[] Materials)>();
@@ -164,6 +165,7 @@ internal sealed class StationTables
 
             foreach (var reason in refused) _log($"{kind.Name} field not set: {reason}");
 
+            WriteDyed(kind, materials, views, recipes, english, chinese);
             written.Add((kind, wanted, materials));
         }
 
@@ -173,6 +175,8 @@ internal sealed class StationTables
         // when this one is empty.
         config.InitProductionListMap();
         config._furnitureToPackageItems = null;
+        // The coloured recipe lookups rebuild themselves when this is empty.
+        config._dyedRecipeToBase = null;
 
         var kinds = written.Select(done => done.Kind).ToList();
 
@@ -186,6 +190,36 @@ internal sealed class StationTables
 
             _log($"{kind.Name} added: item {ids.Item}, furniture {ids.Furniture}, recipe {ids.Recipe}, plant row {ids.Plant}; power {wanted.PowerCost}, growth boost {wanted.GrowthBoost}, materials {MaterialText(materials)}, price {wanted.ShopPrice}, stock {wanted.ShopStock}");
         }
+    }
+
+    /// <summary>
+    /// Writes a station's coloured packages, one for each dye whose grow box rows are there to copy. A dye that cannot
+    /// be written is left out and the others still are: the plain station works without them.
+    /// </summary>
+    private void WriteDyed(StationKind kind, int[] materials, Dictionary<Table, ITableView> views, Il2CppDictionary.Dictionary<int, Config_ProductionList> recipes, Il2CppDictionary.Dictionary<string, string> english, Il2CppDictionary.Dictionary<string, string> chinese)
+    {
+        var skipped = new List<string>();
+
+        foreach (var dye in Dyes.All)
+        {
+            var plan = new StationPlan(Dyes.Rows(kind, dye, materials), Dyes.Texts(kind, dye));
+            var problems = StationRows.Problems(plan, (table, id) => views[table].SlotAt(id, _ours), list => RecipeUsing(recipes, list));
+
+            if (problems.Count > 0)
+            {
+                skipped.Add($"{dye.En} ({string.Join("; ", problems)})");
+
+                continue;
+            }
+
+            SetTexts(plan.Texts, english, chinese);
+
+            foreach (var row in plan.Rows)
+            foreach (var reason in views[row.Table].Write(row, _ours))
+                _log($"{dye.En} {kind.Name} field not set: {reason}");
+        }
+
+        if (skipped.Count > 0) _log($"the {kind.Name} cannot be crafted in these colours: {string.Join(", ", skipped)}");
     }
 
     /// <summary>

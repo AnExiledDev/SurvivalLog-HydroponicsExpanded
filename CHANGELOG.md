@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.1.5
+
+- The Small and Medium can now be crafted in any of the 8 colours, like the Large: pick a colour on the recipe card and one dye is added to the materials. Each coloured package has its own icon.
+- The Small's and Medium's grow light now shines from their own light bar. Before, it came from much higher up, where the Large's bar is.
+- The big pots for medium and large crops sit on a smaller plate, so the water shows around them as it does around the small pots.
+- A dye can no longer be one of a station's `Materials`, since picking a colour adds one.
+- Made for Survival Log 1.1.20719.
+
 ## 0.1.4
 
 - The Small and Medium recipes can now be crafted. Before, they showed at the workbench but stayed locked.

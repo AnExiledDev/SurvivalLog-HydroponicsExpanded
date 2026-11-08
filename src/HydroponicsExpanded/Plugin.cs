@@ -13,7 +13,7 @@ namespace HydroponicsExpanded;
 public sealed class Plugin : BasePlugin
 {
     private const string Guid = "com.dev.survivallog.hydroponicsexpanded";
-    private const string Version = "0.1.4";
+    private const string Version = "0.1.5";
 
     public override void Load()
     {
@@ -57,8 +57,10 @@ public sealed class Plugin : BasePlugin
             if (!iconPlaced)
             {
                 iconPlaced = true;
-                Log.LogInfo(StationIcon.Place());
+                StationIcon.Place();
             }
+
+            StationIcon.Report(message => Log.LogInfo(message));
 
             tables.Tick(now);
             UninstallPrep.Tick(now);

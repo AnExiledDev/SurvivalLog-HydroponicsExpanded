@@ -78,7 +78,8 @@ public static class MaterialList
 
     /// <summary>
     /// The materials to use: the player's, or the default when theirs cannot be used, with why. Theirs cannot be used
-    /// when the text cannot be read, names an item the game does not have, or matches another recipe's materials (a
+    /// when the text cannot be read, names an item the game does not have, holds a dye (each coloured recipe is these
+    /// materials plus its dye), or matches another recipe's materials (a
     /// stock recipe's, or one already <paramref name="taken"/> by another station), since the game files recipes by
     /// their materials and only one of two alike could be crafted.
     /// </summary>
@@ -89,6 +90,8 @@ public static class MaterialList
         if (!TryParse(text, out var materials, out var problem)) return (standard, $"the materials '{text}' cannot be used: {problem}");
 
         if (materials.Distinct().FirstOrDefault(id => !isItem(id)) is var missing and > 0) return (standard, $"the materials '{text}' cannot be used: the game has no item {missing}");
+
+        if (materials.FirstOrDefault(Dyes.IsDye) is var dye and > 0) return (standard, $"the materials '{text}' cannot be used: item {dye} is a dye, and picking a colour adds one when crafting");
 
         if (recipeUsing(materials) is int other) return (standard, $"the materials '{text}' cannot be used: recipe {other} already uses them");
 

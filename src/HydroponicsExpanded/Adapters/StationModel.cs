@@ -33,6 +33,10 @@ internal static class StationModel
 
     /// <summary>The model's group of lit parts, and the stock part the game turns on and off with the power.</summary>
     private const string LightsName = "Lights";
+    private const string GrowLedName = "GrowLED";
+
+    // How far under the bar's lowest face the light sources go, so they light the plants and not the bar's inside.
+    private const float LampBelowBar = 0.05f;
     private const string PlantLightName = "Plant_Light";
 
     /// <summary>The stock watering can and its splash, which the game shows while a player waters the pot.</summary>
@@ -262,6 +266,7 @@ internal static class StationModel
 
         MoveSpots(root, ours.transform, scale);
         HangLights(root, holders, look);
+        LowerLamps(copy, ours.transform, model, watering, look);
         ShowSeats(ours.transform, 1);
 
         var animator = copy.GetComponent<ModelAnimator>();
@@ -340,6 +345,30 @@ internal static class StationModel
         }
 
         lights.SetParent(plantLight, true);
+    }
+
+    /// <summary>
+    /// Puts the stock prefab's light sources just under the model's grow light bar. They hang where the stock lamp was,
+    /// which is far above the Small and Medium bars, so the light seemed to come from the ceiling.
+    /// </summary>
+    private static void LowerLamps(GameObject copy, Transform ours, Model model, Transform? watering, Look look)
+    {
+        if (model.Lowest(GrowLedName) is not float bottom) return;
+
+        var height = ours.TransformPoint(Unity(new Numerics.Vector3(0f, bottom - LampBelowBar, 0f))).y;
+        var moved = new List<string>();
+
+        foreach (var light in copy.GetComponentsInChildren<Light>(true))
+        {
+            if (IsUnder(light.transform, watering)) continue;
+
+            var at = light.transform.position;
+
+            moved.Add($"{at.y:0.00}");
+            light.transform.position = new UnityEngine.Vector3(at.x, height, at.z);
+        }
+
+        _log(moved.Count == 0 ? $"the {look.Name}'s stock prefab has no light sources to move" : $"the {look.Name}'s {moved.Count} light sources moved from {string.Join(", ", moved)} m to {height:0.00} m, under its grow light");
     }
 
     private static bool IsUnder(Transform part, Transform? parent)

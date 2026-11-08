@@ -29,6 +29,9 @@ public sealed record StationKind
     /// </summary>
     public RowIds Stock { get; init; } = new(0, 0, 0, 0, 0, 0);
 
+    /// <summary>The grow box's first coloured package (the Sage Green one); the other seven follow it, a dye slot each.</summary>
+    public int StockDyedItem { get; init; }
+
     /// <summary>The prefab name the furniture row gives. The game has no such prefab: the mod builds it.</summary>
     public string ResName { get; init; } = "";
 

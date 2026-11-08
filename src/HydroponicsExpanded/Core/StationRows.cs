@@ -48,6 +48,9 @@ public static class StationRows
     public const int LargeRecipe = 319;
     public const int LargePlant = 20;
 
+    /// <summary>The Large Station's first coloured recipe (Sage Green); the other seven follow it, a dye slot each.</summary>
+    public const int LargeDyedRecipe = 1377;
+
     /// <summary>The Planting level that unlocks the Large Station's recipe by default. The game's own unlock is the Hydroponic Cultivation talent.</summary>
     public const int LargeUnlockLevel = 5;
 
@@ -68,6 +71,7 @@ public static class StationRows
         Stock = new RowIds(Item: 14067, Furniture: 60006, Plant: 17, Recipe: LargeRecipe, Action: 100014067, Effect: 100014067),
         ResName = "Mod_Hydroponic_S",
         StockPrefab = "P_FlowerPot_011_S1_M01deng",
+        StockDyedItem = 14454,
         ModelFile = "HydroponicStationSmall.glb",
         IconFile = "UI_Item_Icon_Hydroponic_S.png",
         UnlockLevel = 3,
@@ -97,6 +101,7 @@ public static class StationRows
         Stock = new RowIds(Item: 14068, Furniture: 60007, Plant: 18, Recipe: LargeRecipe, Action: 100014068, Effect: 100014068),
         ResName = "Mod_Hydroponic_M",
         StockPrefab = "P_FlowerPot_011_S1_M02_deng",
+        StockDyedItem = 14462,
         ModelFile = "HydroponicStationMedium.glb",
         IconFile = "UI_Item_Icon_Hydroponic_M.png",
         UnlockLevel = 4,

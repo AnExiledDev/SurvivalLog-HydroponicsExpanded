@@ -11,13 +11,16 @@ namespace HydroponicsExpanded.Core;
 /// </summary>
 public static class Uninstall
 {
-    /// <summary>The grow box package a station package becomes, or null for any other item.</summary>
+    /// <summary>
+    /// The grow box package a station package becomes, or null for any other item. A coloured station package becomes
+    /// the grow box package of the same colour.
+    /// </summary>
     public static int? StockItem(int itemId, IReadOnlyList<StationKind> kinds)
     {
         for (var i = 0; i < kinds.Count; i++)
             if (kinds[i].Ids.Item == itemId) return kinds[i].Stock.Item;
 
-        return null;
+        return Dyes.OfPackage(itemId, kinds) is var (kind, dye) ? Dyes.StockIds(kind, dye).Item : null;
     }
 
     /// <summary>The grow box a station's furniture id becomes, or null for any other furniture.</summary>
