@@ -9,7 +9,10 @@ public class ModelFileTests
 {
     private static byte[] Asset(string name) => File.ReadAllBytes(Path.Combine(AppContext.BaseDirectory, "assets", name));
 
-    private static readonly IReadOnlyDictionary<string, Vector3> Movers = new Dictionary<string, Vector3> { ["Lights"] = Vector3.UnitY };
+    private static readonly IReadOnlyDictionary<string, Vector3> Movers = new[] { "Lights", "Seats_1", "Seats_2", "Seats_4" }.ToDictionary(name => name, _ => Vector3.UnitY);
+
+    private const float BayOffset = 0.4525f;
+    private const float PotTop = 0.535f;
 
     private static readonly Model Small = Glb.Read(Asset(StationRows.Small.ModelFile), Movers);
 
@@ -23,16 +26,17 @@ public class ModelFileTests
 
     // The grow lights are a part of their own, so the mod can hang them under the game's Plant_Light switch and the
     // game turns them off with the power.
+    // The bay seats for each plant size are parts of their own too, so the mod can show the ones that fit the crop.
     [Theory]
-    [InlineData("Small")]
-    [InlineData("Medium")]
-    [InlineData("Large")]
-    public void TheLightsArePartOfTheirOwnAndHoldOnlyTheGlowingParts(string size)
+    [InlineData("Small", new[] { "Seats_1" })]
+    [InlineData("Medium", new[] { "Seats_1", "Seats_2" })]
+    [InlineData("Large", new[] { "Seats_1", "Seats_2", "Seats_4" })]
+    public void TheLightsArePartOfTheirOwnAndHoldOnlyTheGlowingParts(string size, string[] seats)
     {
         var model = Load(size);
         var lights = model.Parts.Single(part => part.Name == "Lights");
 
-        Assert.Equal(new[] { Glb.BodyName, "Lights" }, model.Parts.Select(part => part.Name).OrderBy(name => name, StringComparer.Ordinal));
+        Assert.Equal(new[] { Glb.BodyName, "Lights" }.Concat(seats).OrderBy(name => name, StringComparer.Ordinal), model.Parts.Select(part => part.Name).OrderBy(name => name, StringComparer.Ordinal));
         Assert.Equal(new[] { "GrowLED", "StatusLED" }, lights.Meshes.Select(mesh => model.Materials[mesh.Material].Name).OrderBy(name => name, StringComparer.Ordinal));
         Assert.DoesNotContain(model.Parts.Single(part => part.Name == Glb.BodyName).Meshes, mesh => model.Materials[mesh.Material].Emissive != Vector3.Zero);
     }
@@ -63,9 +67,70 @@ public class ModelFileTests
         var (min, max) = Load(size).Bounds();
 
         Assert.InRange(min.Y, -0.01f, 0.01f);
-        Assert.InRange(max.Y, 1.6f, 2.0f);
         Assert.InRange(max.X - min.X, spotX * 0.9f, spotX + 0.2f);
         Assert.InRange(max.Z - min.Z, spotZ * 0.9f, spotZ + 0.2f);
+    }
+
+    // A fully grown crop stands under the grow light, not through it. The tallest crop each station takes, measured from
+    // the game's plant models: strawberry 1.24 m (small crops), tomato 1.43 m (medium), corn 2.35 m (large). The arch
+    // is no taller than it needs to be, so it fits under a ceiling.
+    [Theory]
+    [InlineData("Small", 1.24f)]
+    [InlineData("Medium", 1.43f)]
+    [InlineData("Large", 2.35f)]
+    public void TheGrowLightHangsAboveTheTallestCropTheStationTakes(string size, float tallestCrop)
+    {
+        var model = Load(size);
+        var lights = model.Parts.Single(part => part.Name == "Lights");
+        var lowest = lights.Meshes.Where(mesh => model.Materials[mesh.Material].Name == "GrowLED").SelectMany(mesh => mesh.Positions).Min(p => p.Y) + lights.Pivot.Y;
+
+        Assert.InRange(lowest - (PotTop + tallestCrop), 0.03f, 0.25f);
+    }
+
+    // The game hangs a plant that fills several spots at the middle of those spots, taken in their order in the grow
+    // box (the Large's front pair, then its back pair). Each seat set's pots must be right there, so the crop grows out
+    // of a pot, with the plant's foot inside the pot rather than over a bay divider or floating above the rim.
+    [Theory]
+    [InlineData("Small", "Seats_1", 1)]
+    [InlineData("Medium", "Seats_1", 2)]
+    [InlineData("Medium", "Seats_2", 1)]
+    [InlineData("Large", "Seats_1", 4)]
+    [InlineData("Large", "Seats_2", 2)]
+    [InlineData("Large", "Seats_4", 1)]
+    public void EachSeatSetHasAPotWhereTheGameHangsThePlant(string size, string seatsName, int seeds)
+    {
+        var model = Load(size);
+        var seats = model.Parts.Single(part => part.Name == seatsName);
+        var pots = seats.Meshes.Where(mesh => model.Materials[mesh.Material].Name == "Dark").SelectMany(mesh => mesh.Positions).Select(p => p + seats.Pivot).ToList();
+        var anchors = GameAnchors(StockSpots(size), seeds);
+
+        Assert.NotEmpty(pots);
+        Assert.All(pots, p => Assert.Contains(anchors, a => Vector2.Distance(a, new Vector2(p.X, p.Z)) < 0.25f));
+
+        foreach (var anchor in anchors)
+        {
+            var near = pots.Where(p => Vector2.Distance(anchor, new Vector2(p.X, p.Z)) < 0.25f).ToList();
+            var centre = new Vector2((near.Min(p => p.X) + near.Max(p => p.X)) / 2f, (near.Min(p => p.Z) + near.Max(p => p.Z)) / 2f);
+
+            Assert.InRange(Vector2.Distance(anchor, centre), 0f, 0.01f);
+            Assert.InRange(near.Max(p => p.Y) - PotTop, 0f, 0.06f);
+        }
+    }
+
+    // The stock grow boxes' plant spots, in order, as the mod moves them onto the bays.
+    private static Vector2[] StockSpots(string size) => (size switch
+    {
+        "Small" => new[] { (0f, 0f) },
+        "Medium" => new[] { (-0.5f, 0f), (0.5f, 0f) },
+        _ => new[] { (-0.5f, 0.5f), (0.5f, 0.5f), (-0.5f, -0.5f), (0.5f, -0.5f) },
+    }).Select(spot => StationRows.PlantSpot(spot.Item1, spot.Item2, BayOffset, PotTop)).Select(spot => new Vector2(spot.X, spot.Z)).ToArray();
+
+    // As the game does it: the spots are shared out evenly between the seeds, and each plant stands at the middle of its share.
+    private static Vector2[] GameAnchors(Vector2[] spots, int seeds)
+    {
+        var share = spots.Length / Math.Min(seeds, spots.Length);
+
+        return Enumerable.Range(0, spots.Length / share).Select(i => spots.Skip(i * share).Take(share).Aggregate(Vector2.Zero, (sum, spot) => sum + spot) / share).ToArray();
     }
 
     // The plant spots are worked out from the model's own origin, so the bays must sit around it: the model is not

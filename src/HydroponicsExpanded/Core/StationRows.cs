@@ -226,4 +226,12 @@ public static class StationRows
     public static (float X, float Y, float Z) PlantSpot(float x, float z, float bayOffset, float potTop) => (Snap(x, bayOffset), potTop, Snap(z, bayOffset));
 
     private static float Snap(float value, float offset) => Math.Abs(value) < 0.1f ? 0f : Math.Sign(value) * offset;
+
+    /// <summary>
+    /// How many bays one plant fills, so the station shows seats to match: 1 (a pot per bay), 2 (one pot over two bays)
+    /// or 4 (one pot over all four). The game shares a station's <paramref name="spots"/> out evenly between its
+    /// <paramref name="seeds"/>, so a watermelon (one seed) in a four-spot station takes all four. An empty station shows
+    /// a pot per bay.
+    /// </summary>
+    public static int PlantSize(int spots, int seeds, bool planted) => planted && spots > 0 && seeds > 0 ? spots / Math.Min(seeds, spots) : 1;
 }

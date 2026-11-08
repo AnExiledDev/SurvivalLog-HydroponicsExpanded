@@ -243,6 +243,32 @@ public class StationRowsTests
         Assert.Equal((bayX, 0.535f, bayZ), StationRows.PlantSpot(x, z, 0.4525f, 0.535f));
     }
 
+    // The game shares a station's spots evenly between the seeds planted, so the seed count says how big each plant is:
+    // the station has to show seats of that size, or a watermelon grows over the bay dividers.
+    [Theory]
+    [InlineData(4, 1, 4)]   // watermelon or corn in the Large: one pot over all four bays
+    [InlineData(4, 2, 2)]   // tomatoes in the Large: one pot per row
+    [InlineData(4, 4, 1)]   // strawberries in the Large: a pot per bay
+    [InlineData(2, 1, 2)]   // a tomato in the Medium
+    [InlineData(2, 2, 1)]
+    [InlineData(1, 1, 1)]
+    [InlineData(4, 8, 1)]   // more seeds than spots still means a pot per bay
+    public void APlantFillsItsShareOfTheSpots(int spots, int seeds, int size)
+    {
+        Assert.Equal(size, StationRows.PlantSize(spots, seeds, planted: true));
+    }
+
+    // Once the crop is gone the station goes back to a pot per bay, ready for whatever is planted next.
+    [Theory]
+    [InlineData(4, 1)]
+    [InlineData(2, 0)]
+    [InlineData(0, 1)]
+    public void AnEmptyStationShowsAPotPerBay(int spots, int seeds)
+    {
+        Assert.Equal(1, StationRows.PlantSize(spots, seeds, planted: false));
+        Assert.Equal(1, StationRows.PlantSize(0, seeds, planted: true));
+    }
+
     private static int? NoOtherRecipe(IReadOnlyList<int> materials) => null;
 
     private static bool IsStock(StationKind kind, Table table, int id) => table switch

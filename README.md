@@ -8,6 +8,8 @@ Adds a Small and a Medium Hydroponic Station to Survival Log, and gives the game
 
 The stations work like the Large one: while powered, their full-spectrum grow lights make plants grow half as fast again, warm them, and keep pests, weeds and dryness away, so crops need no care until harvest. Without power the grow lights go out and the help stops. Each station has its own model and icon, and can be dyed like the game's own furniture: the orange frame takes the colour, and the tubs, steel and water stay as they are.
 
+Each station's pots change with what is planted: a pot in every bay for small plants, one big pot over two bays for a medium plant, and one over all four for a large plant such as corn or watermelon, so the crop grows in the middle of its pot instead of over the bay walls. The grow lights hang high enough for the tallest crop each station takes, so the Large stands about 3.2 m tall.
+
 ## Getting them
 
 - Their recipes are at the workbench next to the Hydroponic Station (Large)'s, at the same workbench level.
@@ -42,7 +44,7 @@ Then delete `HydroponicsExpanded.dll` from the `BepInEx\plugins` folder. For a c
 
 ## Requirements
 
-- Survival Log 1.1.20151.
+- Survival Log 1.1.20719.
 - BepInEx for Survival Log.
 - Optional: [Exiled's Toolkit](https://github.com/AnExiledDev/SurvivalLog-ExiledToolkit) 0.4.0 or newer. With it, settings changed on the Mod Manager's Mods screen take effect without restarting the game. Without it, they take effect at the next game start.
 

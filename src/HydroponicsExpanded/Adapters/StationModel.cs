@@ -39,13 +39,21 @@ internal static class StationModel
     private const string WateringName = "WateringFX";
 
     private const string PlantSpotsPrefix = "PlantPos";
+
+    /// <summary>The game's own anchors for a plant that fills several spots, which it hangs among the spots.</summary>
+    private const string PlantAnchorPrefix = "PlantAnchor_";
+
+    /// <summary>The model's bay seats, one group per plant size: Seats_1 a pot per bay, Seats_2 and Seats_4 one big pot.</summary>
+    private const string SeatsPrefix = "Seats_";
+    private static readonly int[] SeatSizes = { 1, 2, 4 };
     private const float HeadBarAboveTop = 0.2f;
 
     /// <summary>Where the model's water bays are: each bay centre this far from the middle, each pot top this high.</summary>
     private const float BayOffset = 0.4525f;
     private const float PotTop = 0.535f;
 
-    private static readonly IReadOnlyDictionary<string, Numerics.Vector3> Movers = new Dictionary<string, Numerics.Vector3> { [LightsName] = Numerics.Vector3.UnitY };
+    private static readonly IReadOnlyDictionary<string, Numerics.Vector3> Movers = SeatSizes.Select(size => SeatsPrefix + size).Append(LightsName)
+        .ToDictionary(name => name, _ => Numerics.Vector3.UnitY);
 
     private static readonly Look[] Looks = StationRows.All.Select(kind => new Look(kind.Name, kind.ResName, kind.StockPrefab, kind.ModelFile))
         .Append(new Look("Hydroponic Station (Large)", StationRows.LargeResName, StationRows.LargeStockPrefab, StationRows.LargeModelFile))
@@ -53,6 +61,7 @@ internal static class StationModel
 
     private static Action<string> _log = _ => { };
     private static GameObject? _holder;
+    private static bool _seatsFailed;
 
     public static void Apply(Harmony harmony, Action<string> log)
     {
@@ -60,6 +69,7 @@ internal static class StationModel
 
         Patch(harmony, AccessTools.Method(typeof(BattleResource), "LoadPrefabWithFallback", new[] { typeof(string) }), prefix: nameof(GiveOurModel));
         Patch(harmony, AccessTools.Method(typeof(PreLoaderDataExtension), "AddChild"), prefix: nameof(SkipPreloadingOurModel));
+        Patch(harmony, AccessTools.Method(typeof(AgentModel), "OnPlantCreateVisual", new[] { typeof(string), typeof(int) }), postfix: nameof(SeatsForThePlant));
     }
 
     /// <summary>The station whose prefab is at <paramref name="path"/>, or null.</summary>
@@ -92,6 +102,66 @@ internal static class StationModel
 
     /// <summary>The game preloads every furniture prefab a level uses from its asset bundles, and ours are in none.</summary>
     private static bool SkipPreloadingOurModel(string __1) => LookAt(__1) == null;
+
+    /// <summary>
+    /// The game has just put up the plant's models (or taken them down, given no model): the station shows the seats
+    /// that fit the plant's size, so a watermelon grows out of one big pot instead of over the bay dividers.
+    /// </summary>
+    private static void SeatsForThePlant(AgentModel __instance, string __0, int __1)
+    {
+        try
+        {
+            var obj = __instance.Obj;
+
+            if (obj == null) return;
+
+            var root = obj.transform;
+            var ours = root.Find(ModelName);
+
+            if (ours == null) return;
+
+            ShowSeats(ours, StationRows.PlantSize(SpotCount(root), __1, !string.IsNullOrEmpty(__0)));
+        }
+        catch (Exception ex)
+        {
+            if (!_seatsFailed) _log($"the station seats could not follow the plant: {ex}");
+
+            _seatsFailed = true;
+        }
+    }
+
+    /// <summary>The spots in the first plant spot group, the one the game plants in, leaving out its own anchors.</summary>
+    private static int SpotCount(Transform root)
+    {
+        for (var g = 0; g < root.childCount; g++)
+        {
+            var group = root.GetChild(g);
+
+            if (!group.name.StartsWith(PlantSpotsPrefix, StringComparison.Ordinal)) continue;
+
+            var count = 0;
+
+            for (var c = 0; c < group.childCount; c++)
+                if (!group.GetChild(c).name.StartsWith(PlantAnchorPrefix, StringComparison.Ordinal)) count++;
+
+            return count;
+        }
+
+        return 0;
+    }
+
+    /// <summary>Shows the seats for <paramref name="size"/> and hides the rest; a size the model has no seats for gets a pot per bay.</summary>
+    private static void ShowSeats(Transform ours, int size)
+    {
+        if (ours.Find(SeatsPrefix + size) == null) size = 1;
+
+        foreach (var each in SeatSizes)
+        {
+            var seats = ours.Find(SeatsPrefix + each);
+
+            if (seats != null) seats.gameObject.SetActive(each == size);
+        }
+    }
 
     private static GameObject? Template(Look look)
     {
@@ -192,6 +262,7 @@ internal static class StationModel
 
         MoveSpots(root, ours.transform, scale);
         HangLights(root, holders, look);
+        ShowSeats(ours.transform, 1);
 
         var animator = copy.GetComponent<ModelAnimator>();
 

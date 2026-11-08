@@ -9,6 +9,7 @@ Hydroponics Expanded adds a Small and a Medium Hydroponic Station to Survival Lo
 [*][b]Two new stations[/b]: the Hydroponic Station (Small) holds one small plant and fits the Plant Grow Box (Small)'s spot. The Hydroponic Station (Medium) holds two small plants or one medium plant and fits the Plant Grow Box (Medium)'s spot. Each has its own model and icon.[/*]
 [*][b]Like the Large one[/b]: while powered, the full-spectrum grow lights make plants grow half as fast again, warm them, and keep pests, weeds and dryness away, so crops need no care until harvest. Without power the lights go out and the help stops.[/*]
 [*][b]A new Large[/b]: the game's Hydroponic Station (Large) gets a new model and icon that match the new stations. One setting gives it back its old look.[/*]
+[*][b]Pots that fit the crop[/b]: each station's pots change with what is planted. Small plants get a pot in every bay. A medium plant gets one big pot over two bays, and a large plant such as corn or watermelon gets one over all four, so it grows in the middle of its pot instead of over the bay walls. The grow lights hang high enough for the tallest crop each station takes, so the Large stands about 3.2 m tall.[/*]
 [*][b]Craft it[/b]: the recipes sit at the workbench next to the Large's, at the same workbench level. The Small's package takes 1 Container, 1 Wire, 1 Electronic Components and 1 Iron Rod. The Medium's takes 1 Container, 1 Wire, 2 Electronic Components and 1 Iron Rod. Taking one down gives back about half.[/*]
 [*][b]Or buy it[/b]: before the disaster, the flowerpot shops that sell the grow box of the same size sell 2 of each, the Small for 60 and the Medium for 100.[/*]
 [*][b]Your balance[/b]: each station's power (2 and 3 by default, the Large draws 6), growth boost, materials, shop price and shop stock are settings on the Mod Manager's Mods screen.[/*]
@@ -22,7 +23,7 @@ This is an early test build. A Large station already placed takes its new look, 
 
 [size=5]Requirements[/size]
 [list]
-[*]Survival Log 1.1.20151. A game update can break it until the mod is updated.[/*]
+[*]Survival Log 1.1.20719. A game update can break it until the mod is updated.[/*]
 [*][url=https://www.nexusmods.com/survivallog/mods/12]BepInEx for Survival Log[/url]. Install it first.[/*]
 [*]Optional: [url=https://www.nexusmods.com/survivallog/mods/61]Exiled's Toolkit[/url] 0.4.0 or newer. With it, settings changed on the Mod Manager's Mods screen take effect without restarting the game. Without it, they take effect at the next game start.[/*]
 [/list]
@@ -36,6 +37,7 @@ This is an early test build. A Large station already placed takes its new look, 
 [*][b]两种新水培站[/b]：全光谱水培站（小）可种一株小型植物，占用植物灯培育箱（小）的位置。全光谱水培站（中）可种两株小型植物或一株中型植物，占用植物灯培育箱（中）的位置。每种都有自己的模型和图标。[/*]
 [*][b]和大型的一样[/b]：通电时，全光谱植物灯让植物生长快一半，还能保暖，并防止虫害、杂草和干旱，作物直到收获都无需照料。断电后灯会熄灭，这些效果也随之停止。[/*]
 [*][b]新的大型水培站[/b]：游戏自带的全光谱水培站（大）换上与新水培站相配的模型和图标。一个设置就能换回原来的样子。[/*]
+[*][b]花盆随作物变化[/b]：每台水培站的花盆会随种下的作物改变。小型植物每格一个花盆；中型植物用一个横跨两格的大花盆；玉米、西瓜这样的大型植物用一个横跨四格的大花盆，植物长在花盆正中，不会压在隔板上。植物灯挂得足够高，能容下每台水培站可种的最高作物，所以大型水培站高约 3.2 米。[/*]
 [*][b]可以制作[/b]：配方在工作台上，紧挨着大型水培站的配方，需要的工作台等级也一样。小型包裹需要 1 个容器、1 个铁丝、1 个电器元件和 1 个铁棍。中型需要 1 个容器、1 个铁丝、2 个电器元件和 1 个铁棍。拆除时返还大约一半材料。[/*]
 [*][b]也可以买[/b]：灾难前，出售同尺寸植物灯培育箱的花盆商店各卖 2 台，小型 60，中型 100。[/*]
 [*][b]自己调平衡[/b]：每种水培站的耗电（默认 2 和 3，大型耗电 6）、生长加速、材料、商店价格和库存，都可以在 Mod Manager 的「模组」界面里设置。[/*]
@@ -49,7 +51,7 @@ This is an early test build. A Large station already placed takes its new look, 
 
 [size=5]前置需求[/size]
 [list]
-[*]Survival Log 1.1.20151。游戏更新后，在模组更新前可能无法使用。[/*]
+[*]Survival Log 1.1.20719。游戏更新后，在模组更新前可能无法使用。[/*]
 [*][url=https://www.nexusmods.com/survivallog/mods/12]BepInEx for Survival Log[/url]，请先安装。[/*]
 [*]可选：[url=https://www.nexusmods.com/survivallog/mods/61]Exiled's Toolkit[/url] 0.4.0 或更新版本。装了它，在 Mod Manager 的「模组」界面改动的设置无需重启游戏即可生效；没装的话，改动在下次启动游戏时生效。[/*]
 [/list]
