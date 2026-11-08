@@ -12,11 +12,12 @@ Each station's pots change with what is planted: a pot in every bay for small pl
 
 ## Getting them
 
-- Their recipes are at the workbench next to the Hydroponic Station (Large)'s, at the same workbench level.
+- Planting level unlocks the recipes: the Small at level 3, the Medium at 4 and the Hydroponic Station (Large) at 5. Getting the Large's recipe, by its level or by the game's Hydroponic Cultivation talent, unlocks the Small and Medium too. A run already past a level gets the recipe when the save loads. Each level is a setting.
+- The recipes are at the workbench next to the Large's.
 - The Small's package takes 1 Container, 1 Wire, 1 Electronic Components and 1 Iron Rod. The Medium's takes 1 Container, 1 Wire, 2 Electronic Components and 1 Iron Rod.
 - Before the disaster, the flowerpot shops that sell the grow box of the same size sell 2 of each station: the Small for 60 (Flowerpots, Small Flowerpots, Electronic Flowerpots) and the Medium for 100 (Flowerpots, Medium Flowerpots, Electronic Flowerpots).
 - Taking a station down gives back about half of what its package took.
-- **Test buttons**: with Cheat Menu installed, its Mod tests tab shows the stations' rows and looks, or shows their recipes right away.
+- **Test buttons**: with Cheat Menu installed, its Mod tests tab shows the stations' rows and looks, or unlocks their recipes right away.
 
 ## Power
 

@@ -13,19 +13,25 @@ namespace HydroponicsExpanded;
 public sealed class Plugin : BasePlugin
 {
     private const string Guid = "com.dev.survivallog.hydroponicsexpanded";
-    private const string Version = "0.1.3";
+    private const string Version = "0.1.4";
 
     public override void Load()
     {
         if (!OptionalLive.IsToolkitInstalled) Log.LogInfo(OptionalLive.MissingNote);
 
         _uninstallPrep = Config.Bind("Uninstall", "UninstallPrep", false,
-            "Turn this on before you remove Hydroponics Expanded. Once a save is loaded, every Small or Medium Hydroponic Station Package becomes the Plant Grow Box Package of its size, in your bags, in storage and on the floor, in every place the save holds, and the shops stop selling the stations. Placed and packed stations are always saved as grow boxes, so they need nothing. Then save the game, quit, and remove HydroponicsExpanded.dll. LogOutput.log lists what was changed. Turning this off again does not turn the packages back.\n" +
-            "移除水培扩展模组之前请先打开此项。读取存档后，背包、储物和地上的每个小型或中型水培站包裹都会变成同尺寸的植物灯培育箱包裹，存档里的每个地点都一样，商店也不再出售水培站。已安装和已打包的水培站本来就按植物灯培育箱保存，不受影响。然后存档、退出游戏，再删除 HydroponicsExpanded.dll。改了哪些东西写在 LogOutput.log 里。再关掉此项，包裹也不会变回来。");
+            "Turn this on before you remove Hydroponics Expanded. Once a save is loaded, every Small or Medium Hydroponic Station Package becomes the Plant Grow Box Package of its size, in your bags, in storage and on the floor, in every place the save holds, and the shops stop selling the stations. Placed and packed stations are always saved as grow boxes, so they need nothing. The Small and Medium recipes come off the unlocked list. Then save the game, quit, and remove HydroponicsExpanded.dll. LogOutput.log lists what was changed. Turning this off again does not turn the packages back.\n" +
+            "移除水培扩展模组之前请先打开此项。读取存档后，背包、储物和地上的每个小型或中型水培站包裹都会变成同尺寸的植物灯培育箱包裹，存档里的每个地点都一样，商店也不再出售水培站。已安装和已打包的水培站本来就按植物灯培育箱保存，不受影响。小型和中型水培站的配方也会从已解锁列表中移除。然后存档、退出游戏，再删除 HydroponicsExpanded.dll。改了哪些东西写在 LogOutput.log 里。再关掉此项，包裹也不会变回来。");
 
         var newLook = Config.Bind("LargeStation", "NewLook", true,
             "Gives the game's Hydroponic Station (Large) the same look as the Small and Medium ones. Turn it off for the game's own look. A change shows on stations placed or loaded afterwards: load the save again to see it on the ones already standing.\n" +
             "让游戏自带的全光谱水培站（大）换上和小型、中型水培站一样的模型。关掉则用游戏原本的样子。改动对之后放置或读取的水培站生效：重新读取存档即可看到已摆放的水培站的变化。");
+
+        var largeUnlock = Config.Bind("LargeStation", "UnlockLevel", StationRows.LargeUnlockLevel, new ConfigDescription(
+            "The Planting level that unlocks the Hydroponic Station (Large)'s recipe, which also unlocks the Small and Medium ones. 0 leaves it to the game's Hydroponic Cultivation talent, which unlocks it at any level. A run already at this level gets the recipe when its save loads.\n" +
+            "种植等级达到多少时解锁全光谱水培站（大）的配方，同时也会解锁小型和中型水培站的配方。0 表示只靠游戏的「无土栽培」天赋解锁，任何等级都可以。已经达到这个等级的存档在读取时就会获得配方。",
+            new AcceptableValueRange<int>(0, Unlocks.TopPlantingLevel)));
+        OptionalLive.Watch(largeUnlock, level => CurrentSettings.LargeUnlockLevel = level);
 
         BindSettings(StationRows.Small, "Plant Grow Box (Small)", "植物灯培育箱（小）", 25, 1);
         BindSettings(StationRows.Medium, "Plant Grow Box (Medium)", "植物灯培育箱（中）", 50, 3);
@@ -89,6 +95,12 @@ public sealed class Plugin : BasePlugin
             $"How many {name}s each flowerpot shop that sells the {growBox} has for sale before the disaster. 0 takes them off the shelves. A shop that already has more than this is brought down to it; stations already bought stay yours.\n" +
             $"灾难前每家出售{growBoxChinese}的花盆商店有几台{chinese}出售。0 表示不卖。已有更多存货时会减到这个数；已经买下的不受影响。",
             new AcceptableValueRange<int>(0, 20)));
+        var unlock = Config.Bind(section, "UnlockLevel", kind.UnlockLevel, new ConfigDescription(
+            $"The Planting level that unlocks the {name}'s recipe. Getting the Hydroponic Station (Large)'s recipe, by its level or by the Hydroponic Cultivation talent, unlocks it at any level. 0 leaves it to the Large Station's recipe alone. A run already at this level gets the recipe when its save loads.\n" +
+            $"种植等级达到多少时解锁{chinese}的配方。获得全光谱水培站（大）的配方后（无论是靠等级还是「无土栽培」天赋），任何等级都会解锁它。0 表示只随大型水培站的配方解锁。已经达到这个等级的存档在读取时就会获得配方。",
+            new AcceptableValueRange<int>(0, Unlocks.TopPlantingLevel)));
+
+        OptionalLive.Watch(unlock, level => CurrentSettings.SetUnlockLevel(kind, level));
 
         // Uninstall prep holds the stock at 0, so the shops stop listing the station.
         OptionalLive.Watch(() => CurrentSettings.Set(kind, new StationSettings(power.Value, growth.Value, materials.Value, price.Value, _uninstallPrep!.Value ? 0 : stock.Value)), power, growth, materials, price, stock, _uninstallPrep!);

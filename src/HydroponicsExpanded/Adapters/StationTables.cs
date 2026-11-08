@@ -15,7 +15,8 @@ namespace HydroponicsExpanded.Adapters;
 /// that were made from them, and brings the stations into a run: the flowerpot shops before the disaster sell them next
 /// to the grow box of the same size. It writes again when the game loads a table afresh or a setting changes, over its
 /// own rows where they already are. It also points the Hydroponic Station (Large) at the mod's model while that setting is
-/// on, and every few seconds shows a station's recipe to a player who was already shown the Large Station's.
+/// on, and every few seconds unlocks the stations' recipes a run has earned: each at its Planting level, and the Small and
+/// Medium along with the Large Station's.
 /// </summary>
 internal sealed class StationTables
 {
@@ -46,7 +47,7 @@ internal sealed class StationTables
         if (now >= _nextRevealAt)
         {
             _nextRevealAt = now + RevealSeconds;
-            ShowRecipes();
+            UnlockRecipes();
         }
 
         if (now < _nextCheckAt) return;
@@ -283,38 +284,64 @@ internal sealed class StationTables
         _reveals.Clear();
 
         foreach (var kind in kinds)
-            if (recipes.ContainsKey(kind.Ids.Recipe) && recipes.ContainsKey(kind.RevealedWith)) _reveals.Add(new Reveal(kind, recipes[kind.Ids.Recipe], recipes[kind.RevealedWith]));
+            if (recipes.ContainsKey(kind.Ids.Recipe)) _reveals.Add(new Reveal(kind, recipes[kind.Ids.Recipe]));
     }
 
     /// <summary>
-    /// Shows a station's recipe to a player who has the Large Station's: a run that was past it before the mod was
-    /// added or updated, or a run whose materials setting changed, since the game remembers a recipe by its materials.
+    /// Unlocks each station's recipe once the run has earned it (see <see cref="Unlocks.RecipesDue"/>), in a run already
+    /// going too, and lists an unlocked one again at the workbench after its materials setting changed, since the game
+    /// lists a recipe by its materials. Uninstall prep stops it, so the recipes it takes back stay gone.
     /// </summary>
-    private void ShowRecipes()
+    private void UnlockRecipes()
     {
-        if (_reveals.Count == 0) return;
+        if (_reveals.Count == 0 || UninstallPrep.IsOn) return;
 
         try
         {
-            var tool = GameSingleton.Existing<BattleLogicWorld>()?._ToolTableManager;
+            var world = GameSingleton.Existing<BattleLogicWorld>();
+            var tool = world?._ToolTableManager;
+            var skills = world?._ProficiencyManager;
 
-            if (tool == null) return;
+            if (tool == null || skills == null) return;
+
+            var unlocked = new HashSet<int>();
+            var list = tool._CraftUnlockedProductionIds_k__BackingField;
+
+            if (list != null)
+                for (var i = 0; i < list.Count; i++) unlocked.Add(list[i]);
+
+            var planting = skills.GetLevel(ProficiencyType.Plant);
+            var ours = _reveals.Select(reveal => (reveal.Kind.Ids.Recipe, CurrentSettings.UnlockLevelOf(reveal.Kind))).ToList();
+            var due = Unlocks.RecipesDue(planting, (StationRows.LargeRecipe, CurrentSettings.LargeUnlockLevel), ours, unlocked);
+
+            if (due.Count > 0)
+            {
+                var ids = new Il2CppInts();
+
+                foreach (var id in due) ids.Add(id);
+
+                tool.AddProductionCraftUnlocks(ids);
+                _log($"recipes {string.Join(", ", due)} unlocked at Planting level {planting}");
+            }
 
             foreach (var reveal in _reveals)
             {
-                if (tool.IsProductionRevealedByRecord(reveal.Ours) || !tool.IsProductionRevealedByRecord(reveal.ComesWith)) continue;
+                var id = reveal.Kind.Ids.Recipe;
+                var materials = reveal.Ours.MaterialList;
+
+                if (!unlocked.Contains(id) || materials == null || tool.IsProductionKnownToPlayer(reveal.Ours, StationRows.MaterialKey(ToArray(materials)))) continue;
 
                 var ids = new Il2CppInts();
 
-                ids.Add(reveal.Kind.Ids.Recipe);
+                ids.Add(id);
                 tool.AddProductionRecords(ids);
-                _log($"{reveal.Kind.Name} recipe shown, since recipe {reveal.Kind.RevealedWith} already is");
+                _log($"{reveal.Kind.Name} recipe listed again at the workbench for its new materials");
             }
         }
         catch (Exception ex)
         {
             _reveals.Clear();
-            _log($"cannot show the stations' recipes in a run already going, so they wait for the Large Station's: {ex}");
+            _log($"cannot unlock the stations' recipes, so only the game's own unlocks apply: {ex}");
         }
     }
 
@@ -380,7 +407,7 @@ internal sealed class StationTables
 
     private sealed record LargeLook(string ResName, string Icon, string WebIcon);
 
-    private sealed record Reveal(StationKind Kind, Config_ProductionList Ours, Config_ProductionList ComesWith);
+    private sealed record Reveal(StationKind Kind, Config_ProductionList Ours);
 
     /// <summary>The tables the mod writes, read from the game once a check.</summary>
     private sealed class Tables

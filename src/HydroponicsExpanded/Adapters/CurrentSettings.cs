@@ -18,6 +18,22 @@ internal static class CurrentSettings
     /// <summary>Whether the game's Hydroponic Station (Large) is built with the mod's model.</summary>
     public static bool NewLook { get; set; } = true;
 
+    /// <summary>The Planting level that unlocks the Hydroponic Station (Large)'s recipe; 0 leaves it to the game's talent.</summary>
+    public static int LargeUnlockLevel { get; set; } = StationRows.LargeUnlockLevel;
+
+    private static int[] _unlockLevels = StationRows.All.Select(kind => kind.UnlockLevel).ToArray();
+
+    /// <summary>The Planting level that unlocks a station's recipe; 0 means only the Large Station's recipe brings it.</summary>
+    public static int UnlockLevelOf(StationKind kind) => _unlockLevels[IndexOf(kind)];
+
+    public static void SetUnlockLevel(StationKind kind, int level)
+    {
+        var next = (int[])_unlockLevels.Clone();
+
+        next[IndexOf(kind)] = level;
+        _unlockLevels = next;
+    }
+
     public static StationSettings Of(StationKind kind) => _current[IndexOf(kind)];
 
     public static void Set(StationKind kind, StationSettings settings)

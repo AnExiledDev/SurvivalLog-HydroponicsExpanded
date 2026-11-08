@@ -55,6 +55,7 @@ internal static class UninstallPrep
         var packages = Packages(items);
         var shops = ShopStock.RemoveStations();
         var bought = Ledger(world._DataCollectionManager);
+        var recipes = Recipes(world._ToolTableManager);
         var saved = 0;
         var save = GameSingleton.Existing<GameSaveManager>()?._gameSave_k__BackingField?._CurSave_k__BackingField;
 
@@ -65,8 +66,23 @@ internal static class UninstallPrep
             saved = Saved(save);
         }
 
-        if (packages + shops + bought + saved > 0)
-            Log($"Uninstall prep: {packages} station packages here and {saved} saved elsewhere turned into grow box packages, {shops} shop entries removed, {bought} purchase records moved to the grow boxes. Save the game, then remove HydroponicsExpanded.dll.");
+        if (packages + shops + bought + saved + recipes > 0)
+            Log($"Uninstall prep: {packages} station packages here and {saved} saved elsewhere turned into grow box packages, {shops} shop entries removed, {bought} purchase records moved to the grow boxes, {recipes} station recipes taken off the unlocked list. Save the game, then remove HydroponicsExpanded.dll.");
+    }
+
+    /// <summary>Takes the stations' recipes off the run's list of unlocked recipes, which a game without the mod does not know.</summary>
+    private static int Recipes(ToolTableManager? tool)
+    {
+        var unlocked = tool?._CraftUnlockedProductionIds_k__BackingField;
+
+        if (unlocked == null) return 0;
+
+        var count = 0;
+
+        foreach (var kind in StationRows.All)
+            while (unlocked.Remove(kind.Ids.Recipe)) count++;
+
+        return count;
     }
 
     /// <summary>The station packages in the place loaded now, wherever they lie. Each bag's weight is kept right.</summary>

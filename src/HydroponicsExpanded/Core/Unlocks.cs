@@ -46,4 +46,30 @@ public static class Unlocks
     /// never above a full shop.
     /// </summary>
     public static int NewStock(int current, int before, int after) => Math.Clamp(current + after - before, 0, Math.Max(0, after));
+
+    /// <summary>The highest Planting level in the game.</summary>
+    public const int TopPlantingLevel = 5;
+
+    /// <summary>
+    /// The station recipes a run should be able to craft and cannot yet, from its Planting level and the recipes it
+    /// can already craft. The Large Station's comes at its own level. The Small's and the Medium's come at theirs, or
+    /// with the Large Station's however the run got that one: the Hydroponic Cultivation talent unlocks only the Large.
+    /// A level of 0 means the level never unlocks that station.
+    /// </summary>
+    /// <param name="large">The Large Station's recipe and the Planting level that unlocks it.</param>
+    /// <param name="ours">The mod's stations' recipes and the level that unlocks each.</param>
+    public static IReadOnlyList<int> RecipesDue(int planting, (int Recipe, int Level) large, IReadOnlyList<(int Recipe, int Level)> ours, IReadOnlyCollection<int> unlocked)
+    {
+        var due = new List<int>();
+        var hasLarge = unlocked.Contains(large.Recipe) || Reached(planting, large.Level);
+
+        if (hasLarge && !unlocked.Contains(large.Recipe)) due.Add(large.Recipe);
+
+        foreach (var (recipe, level) in ours)
+            if (!unlocked.Contains(recipe) && !due.Contains(recipe) && (hasLarge || Reached(planting, level))) due.Add(recipe);
+
+        return due;
+    }
+
+    private static bool Reached(int planting, int level) => level > 0 && planting >= level;
 }

@@ -39,8 +39,8 @@ public sealed record StationKind
 
     public string IconFile { get; init; } = "";
 
-    /// <summary>The stock recipe that reveals this one: anyone shown the Large Station's recipe is shown this too.</summary>
-    public int RevealedWith { get; init; }
+    /// <summary>The Planting level that unlocks its recipe by default.</summary>
+    public int UnlockLevel { get; init; }
 
     /// <summary>The pre-disaster shops (Config_ShopFurniture) that sell it, the ones that sell its grow box.</summary>
     public IReadOnlyList<int> Shops { get; init; } = Array.Empty<int>();

@@ -17,7 +17,7 @@ public static class DevCheats
     private const string NotInGame = "load a save first";
 
     [DisplayName("Show stations\n查看水培站")]
-    [Description("Shows each hydroponic station's rows as the game holds them now: power, plant count, growth boost, price, whether its recipe is shown, and which model the Large Station uses.\n显示游戏当前记录的每种水培站：耗电、可种植数、生长加速、价格、配方是否已显示，以及大型水培站用的是哪个模型。")]
+    [Description("Shows each hydroponic station's rows as the game holds them now: power, plant count, growth boost, price, whether its recipe is unlocked, and which model the Large Station uses.\n显示游戏当前记录的每种水培站：耗电、可种植数、生长加速、价格、配方是否已解锁，以及大型水培站用的是哪个模型。")]
     public static string ShowStations()
     {
         var config = GameSingleton.Existing<ConfigManager>();
@@ -43,9 +43,9 @@ public static class DevCheats
 
             var row = furniture[ids.Furniture];
             var plant = plants[ids.Plant];
-            var shown = tool.IsProductionRevealedByRecord(recipes[ids.Recipe]);
+            var shown = tool._CraftUnlockedProductionIds_k__BackingField?.Contains(ids.Recipe) == true;
 
-            lines.Add($"{kind.Name}: furniture {ids.Furniture}, power {row.PowerCost}, plants {plant.Capacity}, growth boost {plant.GrowthFaster}, price {row.FurniturePrice}, recipe {ids.Recipe} {(shown ? "shown" : "not shown yet")}");
+            lines.Add($"{kind.Name}: furniture {ids.Furniture}, power {row.PowerCost}, plants {plant.Capacity}, growth boost {plant.GrowthFaster}, price {row.FurniturePrice}, recipe {ids.Recipe} {(shown ? "unlocked" : "locked")} (Planting level {CurrentSettings.UnlockLevelOf(kind)})");
         }
 
         if (furniture.ContainsKey(StationRows.LargeFurniture))
@@ -54,9 +54,9 @@ public static class DevCheats
         return string.Join("\n", lines);
     }
 
-    [DisplayName("Show all recipes now\n立即显示所有配方")]
-    [Description("Shows both stations' recipes at the workbench now, without finding the Hydroponic Station (Large)'s recipe first.\n不必先获得大型水培站的配方，立即在工作台显示两种水培站的配方。")]
-    public static string ShowAllRecipes()
+    [DisplayName("Unlock all recipes now\n立即解锁所有配方")]
+    [Description("Unlocks both stations' recipes at the workbench now, without reaching their Planting level or getting the Hydroponic Station (Large)'s recipe first.\n不必达到种植等级，也不必先获得大型水培站的配方，立即在工作台解锁两种水培站的配方。")]
+    public static string UnlockAllRecipes()
     {
         var tool = GameSingleton.Existing<BattleLogicWorld>()?._ToolTableManager;
         var recipes = GameSingleton.Existing<ConfigManager>()?._Config_ProductionList_Dict;
@@ -68,15 +68,15 @@ public static class DevCheats
         foreach (var kind in StationRows.All)
         {
             if (!recipes.ContainsKey(kind.Ids.Recipe)) return $"{kind.Name}: recipe {kind.Ids.Recipe} is not in the game's tables yet";
-            if (tool.IsProductionRevealedByRecord(recipes[kind.Ids.Recipe])) continue;
+            if (tool._CraftUnlockedProductionIds_k__BackingField?.Contains(kind.Ids.Recipe) == true) continue;
 
             var ids = new Il2CppInts();
 
             ids.Add(kind.Ids.Recipe);
-            tool.AddProductionRecords(ids);
+            tool.AddProductionCraftUnlocks(ids);
             added.Add(kind.Name);
         }
 
-        return added.Count == 0 ? "both recipes were already shown" : $"shown now: {string.Join(", ", added)}";
+        return added.Count == 0 ? "both recipes were already unlocked" : $"unlocked now: {string.Join(", ", added)}";
     }
 }

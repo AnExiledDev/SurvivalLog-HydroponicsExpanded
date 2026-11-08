@@ -48,6 +48,9 @@ public static class StationRows
     public const int LargeRecipe = 319;
     public const int LargePlant = 20;
 
+    /// <summary>The Planting level that unlocks the Large Station's recipe by default. The game's own unlock is the Hydroponic Cultivation talent.</summary>
+    public const int LargeUnlockLevel = 5;
+
     /// <summary>The Large Station's own prefab, and the one the mod builds for its new look.</summary>
     public const string LargeStockPrefab = "P_WaterTank_02";
     public const string LargeResName = "Mod_Hydroponic_L";
@@ -67,7 +70,7 @@ public static class StationRows
         StockPrefab = "P_FlowerPot_011_S1_M01deng",
         ModelFile = "HydroponicStationSmall.glb",
         IconFile = "UI_Item_Icon_Hydroponic_S.png",
-        RevealedWith = LargeRecipe,
+        UnlockLevel = 3,
         // 3 Planter Market, 4 Small Planters, 7 Electric Planters: the shops that sell the small grow box.
         Shops = new[] { 3, 4, 7 },
         Capacity = 1,
@@ -96,7 +99,7 @@ public static class StationRows
         StockPrefab = "P_FlowerPot_011_S1_M02_deng",
         ModelFile = "HydroponicStationMedium.glb",
         IconFile = "UI_Item_Icon_Hydroponic_M.png",
-        RevealedWith = LargeRecipe,
+        UnlockLevel = 4,
         // 3 Planter Market, 5 Medium Planters, 7 Electric Planters: the shops that sell the medium grow box.
         Shops = new[] { 3, 5, 7 },
         Capacity = 2,
