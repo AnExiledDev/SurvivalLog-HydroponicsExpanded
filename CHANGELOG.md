@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.1.7
+
+- The Mod Manager's Mods screen links to this mod's GitHub page and changelog.
+- Made for Survival Log 1.1.20719.
+
 ## 0.1.6
 
 - The Small's and Medium's glowing light beam now starts at their own light bar too. 0.1.5 moved only the light itself, so the beam you see still came from high up.

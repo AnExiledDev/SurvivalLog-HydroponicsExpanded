@@ -48,7 +48,22 @@ Then delete `HydroponicsExpanded.dll` from the `BepInEx\plugins` folder. For a c
 - Survival Log 1.1.20719.
 - BepInEx for Survival Log.
 - Optional: [Exiled's Toolkit](https://github.com/AnExiledDev/SurvivalLog-ExiledToolkit) 0.4.0 or newer. With it, settings changed on the Mod Manager's Mods screen take effect without restarting the game. Without it, they take effect at the next game start.
+- Optional: [Mod Manager](https://www.nexusmods.com/survivallog/mods/73). With it, you can change every setting in game on its Mods screen and see what each one does, without opening the config file.
 
 ## Install
 
 Copy `HydroponicsExpanded.dll` into `BepInEx/plugins`.
+
+## Configuration
+
+See [CONFIG.md](CONFIG.md).
+
+## Feedback and bug reports
+
+Found a bug, have an idea, or something feels off? Come say so on the Core Directive Discord: https://discord.gg/trTsyxUFqg . When reporting a bug, attach `BepInEx\LogOutput.log`.
+
+To reach me directly, message `exiled.dev` on Discord. You can find me in the [official Survival Log Discord](https://discord.gg/MZGg4gQAUe). I'm also on X as [@AnExiledDev](https://x.com/AnExiledDev).
+
+## License
+
+MIT
