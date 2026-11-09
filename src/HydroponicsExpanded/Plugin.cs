@@ -27,7 +27,7 @@ public sealed class Plugin : BasePlugin
             "移除水培扩展模组之前请先打开此项。读取存档后，背包、储物和地上的每个小型或中型水培站包裹都会变成同尺寸的植物灯培育箱包裹，存档里的每个地点都一样，商店也不再出售水培站。已安装和已打包的水培站本来就按植物灯培育箱保存，不受影响。小型和中型水培站的配方也会从已解锁列表中移除。然后存档、退出游戏，再删除 HydroponicsExpanded.dll。改了哪些东西写在 LogOutput.log 里。再关掉此项，包裹也不会变回来。");
 
         var newLook = Config.Bind("LargeStation", "NewLook", true,
-            "Gives the game's Hydroponic Station (Large) the same look as the Small and Medium ones. Turn it off for the game's own look. A change shows on stations placed or loaded afterwards: load the save again to see it on the ones already standing.\n" +
+            "Gives the game's Hydroponic Station (Large) the same look as the Small and Medium ones. Turn it off for the game's look. A change shows on stations placed or loaded afterwards: load the save again to see it on the ones already standing.\n" +
             "让游戏自带的全光谱水培站（大）换上和小型、中型水培站一样的模型。关掉则用游戏原本的样子。改动对之后放置或读取的水培站生效：重新读取存档即可看到已摆放的水培站的变化。");
 
         var largeUnlock = Config.Bind("LargeStation", "UnlockLevel", StationRows.LargeUnlockLevel, new ConfigDescription(

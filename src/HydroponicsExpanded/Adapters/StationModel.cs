@@ -44,7 +44,7 @@ internal static class StationModel
 
     private const string PlantSpotsPrefix = "PlantPos";
 
-    /// <summary>The game's own anchors for a plant that fills several spots, which it hangs among the spots.</summary>
+    /// <summary>The game's anchors for a plant that fills several spots, which it hangs among the spots.</summary>
     private const string PlantAnchorPrefix = "PlantAnchor_";
 
     /// <summary>The model's bay seats, one group per plant size: Seats_1 a pot per bay, Seats_2 and Seats_4 one big pot.</summary>
@@ -95,7 +95,7 @@ internal static class StationModel
         }
         catch (Exception ex)
         {
-            if (!look.HasFailed) _log($"the {look.Name}'s model could not be built, so it has the game's own look: {ex}");
+            if (!look.HasFailed) _log($"the {look.Name}'s model could not be built, so it has the game's look: {ex}");
 
             look.HasFailed = true;
             __result = BattleResource.LoadPrefabWithFallback(look.StockPath);

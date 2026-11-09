@@ -4,15 +4,15 @@ Adds a Small and a Medium Hydroponic Station to Survival Log, and gives the game
 
 - **Hydroponic Station (Small)**: one small plant. It fits the Plant Grow Box (Small)'s spot.
 - **Hydroponic Station (Medium)**: two small plants or one medium plant. It fits the Plant Grow Box (Medium)'s spot.
-- **Hydroponic Station (Large)**: the game's own, four small plants, two medium or one large, with the new model. One setting gives it its old look back.
+- **Hydroponic Station (Large)**: the game's, four small plants, two medium or one large, with the new model. One setting gives it its old look back.
 
-The stations work like the Large one: while powered, their full-spectrum grow lights make plants grow half as fast again, warm them, and keep pests, weeds and dryness away, so crops need no care until harvest. Without power the grow lights go out and the help stops. Each station has its own model and icon, and can be crafted in any of the game's 8 colours or dyed later like the game's own furniture: the orange frame takes the colour, and the tubs, steel and water stay as they are.
+The stations work like the Large one: while powered, their full-spectrum grow lights make plants grow half as fast again, warm them, and keep pests, weeds and dryness away, so crops need no care until harvest. Without power the grow lights go out and the help stops. Each station has its own model and icon, and can be crafted in any of the game's 8 colours or dyed later like the game's furniture: the orange frame takes the colour, and the tubs, steel and water stay as they are.
 
 Each station's pots change with what is planted: a pot in every bay for small plants, one big pot over two bays for a medium plant, and one over all four for a large plant such as corn or watermelon, so the crop grows in the middle of its pot instead of over the bay walls. The grow lights hang high enough for the tallest crop each station takes, so the Large stands about 3.2 m tall.
 
 ## Getting them
 
-- Planting level unlocks the recipes: the Small at level 3 and the Medium at 4. The Hydroponic Station (Large) keeps the game's own unlock, the Hydroponic Cultivation talent, unless you give it a level too. Getting the Large's recipe, by the talent or its level, unlocks the Small and Medium too. A run already past a level gets the recipe when the save loads. Each level is a setting.
+- Planting level unlocks the recipes: the Small at level 3 and the Medium at 4. The Hydroponic Station (Large) keeps the game's unlock, the Hydroponic Cultivation talent, unless you give it a level too. Getting the Large's recipe, by the talent or its level, unlocks the Small and Medium too. A run already past a level gets the recipe when the save loads. Each level is a setting.
 - The recipes are at the workbench next to the Large's.
 - The Small's package takes 1 Container, 1 Wire, 1 Electronic Components and 1 Iron Rod. The Medium's takes 1 Container, 1 Wire, 2 Electronic Components and 1 Iron Rod.
 - Before the disaster, the flowerpot shops that sell the grow box of the same size sell 2 of each station: the Small for 60 (Flowerpots, Small Flowerpots, Electronic Flowerpots) and the Medium for 100 (Flowerpots, Medium Flowerpots, Electronic Flowerpots).
@@ -31,7 +31,7 @@ Settings live in `BepInEx\config\com.dev.survivallog.hydroponicsexpanded.cfg`, c
 
 ## Save safety
 
-The game saves each station as the grow box of its size, and the mod turns it back into a station when the save loads. Without the mod, your stations become grow boxes and the save still loads. The Large keeps being the game's own station, so it never needs anything.
+The game saves each station as the grow box of its size, and the mod turns it back into a station when the save loads. Without the mod, your stations become grow boxes and the save still loads. The Large keeps being the game's station, so it never needs anything.
 
 ## Uninstall
 

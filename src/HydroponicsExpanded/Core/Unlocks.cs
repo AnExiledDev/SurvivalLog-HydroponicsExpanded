@@ -5,7 +5,7 @@ using System.Linq;
 namespace HydroponicsExpanded.Core;
 
 /// <summary>
-/// The edits to the game's own shops that sell the stations: the pre-disaster shops' stock lists, and how a live
+/// The edits to the game's shops that sell the stations: the pre-disaster shops' stock lists, and how a live
 /// shop's count follows a change in the stock setting. Each edit can run again on rows it already changed and leaves
 /// them as they are.
 /// </summary>

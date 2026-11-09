@@ -103,7 +103,7 @@ public static class MaterialList
     }
 
     /// <summary>
-    /// What taking a station down gives back: about half of what it was made from, like the game's own furniture. Each
+    /// What taking a station down gives back: about half of what it was made from, like the game's furniture. Each
     /// material gives back half its count rounded down, then ones with an odd count give one more, in the order
     /// listed, until half the pieces (at least one) are back. No material comes back more than it went in.
     /// </summary>

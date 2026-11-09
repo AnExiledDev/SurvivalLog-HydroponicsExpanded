@@ -12,11 +12,11 @@ Hydroponics Expanded adds a Small and a Medium Hydroponic Station to Survival Lo
 [*][b]Like the Large one[/b]: while powered, the full-spectrum grow lights make plants grow half as fast again, warm them, and keep pests, weeds and dryness away, so crops need no care until harvest. Without power the lights go out and the help stops.[/*]
 [*][b]A new Large[/b]: the game's Hydroponic Station (Large) gets a new model and icon that match the new stations. One setting gives it back its old look.[/*]
 [*][b]Pots that fit the crop[/b]: each station's pots change with what is planted. Small plants get a pot in every bay. A medium plant gets one big pot over two bays, and a large plant such as corn or watermelon gets one over all four, so it grows in the middle of its pot instead of over the bay walls. The grow lights hang high enough for the tallest crop each station takes, so the Large stands about 3.2 m tall.[/*]
-[*][b]Unlock it[/b]: Planting level 3 unlocks the Small and 4 the Medium. The Large keeps the game's own unlock, the Hydroponic Cultivation talent, unless you give it a level too. Getting the Large's recipe, by the talent or its level, unlocks the other two as well. A run already past a level gets the recipe when the save loads, and each level is a setting.[/*]
+[*][b]Unlock it[/b]: Planting level 3 unlocks the Small and 4 the Medium. The Large keeps the game's unlock, the Hydroponic Cultivation talent, unless you give it a level too. Getting the Large's recipe, by the talent or its level, unlocks the other two as well. A run already past a level gets the recipe when the save loads, and each level is a setting.[/*]
 [*][b]Craft it[/b]: the recipes sit at the workbench next to the Large's. The Small's package takes 1 Container, 1 Wire, 1 Electronic Components and 1 Iron Rod. The Medium's takes 1 Container, 1 Wire, 2 Electronic Components and 1 Iron Rod. Taking one down gives back about half.[/*]
 [*][b]Or buy it[/b]: before the disaster, the flowerpot shops that sell the grow box of the same size sell 2 of each, the Small for 60 and the Medium for 100.[/*]
 [*][b]Set it your way[/b]: each station's power, growth boost, materials, shop price and shop stock are settings.[/*]
-[*][b]Dye them[/b]: craft a station in any of the game's 8 colours, or dye it later like the game's own furniture. The orange frame takes the colour; the tubs, steel and water stay as they are.[/*]
+[*][b]Dye them[/b]: craft a station in any of the game's 8 colours, or dye it later like the game's furniture. The orange frame takes the colour; the tubs, steel and water stay as they are.[/*]
 [*][b]Safe to remove[/b]: the game saves each station as the grow box of its size, so a save still loads without the mod. Before you remove it, turn on the UninstallPrep setting and load your save: station packages in bags and storage become grow box packages, so nothing is lost. Then save, quit and delete HydroponicsExpanded.dll.[/*]
 [*][b]English and Chinese[/b]: every name and description comes in both.[/*]
 [/list]
@@ -30,7 +30,7 @@ Hydroponics Expanded adds a Small and a Medium Hydroponic Station to Survival Lo
 [/list]
 
 [size=5]Known issues[/size]
-This is an early test build. A Large station already placed takes its new look, or its old one, the next time the save loads. The dyed Large packages keep the game's own icon.
+This is an early test build. A Large station already placed takes its new look, or its old one, the next time the save loads. The dyed Large packages keep the game's icon.
 
 [center][img]https://sldb.core-directive.com/img/mods-banner.jpg[/img]
 [size=4][url=https://www.nexusmods.com/survivallog/mods/73]Get Mod Manager[/url] to set up all your mods in game  |  [url=https://sldb.core-directive.com/en/]Open the Survival Log wiki[/url] for items, recipes and maps[/size][/center]

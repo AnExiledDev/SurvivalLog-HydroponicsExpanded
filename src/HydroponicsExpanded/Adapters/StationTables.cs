@@ -88,7 +88,7 @@ internal sealed class StationTables
 
     /// <summary>
     /// Has every plant growing in one of the stations work out its growth time again from the rows as they are now. The
-    /// game's own step for a power change does this and keeps the share of growth already done.
+    /// game's step for a power change does this and keeps the share of growth already done.
     /// </summary>
     private void RegrowPlanted()
     {
@@ -283,7 +283,7 @@ internal sealed class StationTables
 
     /// <summary>
     /// Points the Hydroponic Station (Large)'s furniture row and its package at the mod's model and icon, or back at the
-    /// game's own. The game's values are read the first time and kept, so turning it off puts back what was there.
+    /// game's. The game's values are read the first time and kept, so turning it off puts back what was there.
     /// Stations already built keep the model they were built with until the save is loaded again.
     /// </summary>
     private void SetLargeLook(Tables tables, bool isNewLook)
@@ -311,7 +311,7 @@ internal sealed class StationTables
         station.ResName = look.ResName;
         station.ICON = look.Icon;
         package.WebIcon = look.WebIcon;
-        _log(isNewLook ? "the Hydroponic Station (Large) has the new look" : "the Hydroponic Station (Large) has the game's own look");
+        _log(isNewLook ? "the Hydroponic Station (Large) has the new look" : "the Hydroponic Station (Large) has the game's look");
     }
 
     private void KeepReveals(Il2CppDictionary.Dictionary<int, Config_ProductionList> recipes, IReadOnlyList<StationKind> kinds)
@@ -376,7 +376,7 @@ internal sealed class StationTables
         catch (Exception ex)
         {
             _reveals.Clear();
-            _log($"cannot unlock the stations' recipes, so only the game's own unlocks apply: {ex}");
+            _log($"cannot unlock the stations' recipes, so only the game's unlocks apply: {ex}");
         }
     }
 

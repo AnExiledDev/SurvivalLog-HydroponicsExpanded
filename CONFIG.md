@@ -19,7 +19,7 @@ Each station has its own section, `[SmallStation]` and `[MediumStation]`, with t
 
 | Setting | Default | What it does |
 | --- | --- | --- |
-| `NewLook` | `true` | Gives the game's Hydroponic Station (Large) the new model and icon that match the Small and Medium. Turn it off for the game's own look. A change shows on stations placed or loaded afterwards. |
+| `NewLook` | `true` | Gives the game's Hydroponic Station (Large) the new model and icon that match the Small and Medium. Turn it off for the game's look. A change shows on stations placed or loaded afterwards. |
 | `UnlockLevel` | `0` | The Planting level that unlocks the Hydroponic Station (Large)'s recipe, which also unlocks the Small and Medium ones. `0`, the default, leaves it to the game's Hydroponic Cultivation talent, which unlocks it at any level. A run already at this level gets the recipe when its save loads. Any value from `0` to `5`. |
 
 ## Uninstall

@@ -4,7 +4,7 @@ using Xunit;
 namespace HydroponicsExpanded.Tests;
 
 // A game without the mod drops what it does not know, so Uninstall prep must turn every station id into the grow box
-// of the same size, and leave everything else alone (the game's own Large Station most of all).
+// of the same size, and leave everything else alone (the game's Large Station most of all).
 public class UninstallTests
 {
     [Theory]

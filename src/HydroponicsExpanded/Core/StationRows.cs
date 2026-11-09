@@ -52,7 +52,7 @@ public static class StationRows
     public const int LargeDyedRecipe = 1377;
 
     /// <summary>
-    /// The Planting level that unlocks the Large Station's recipe by default: 0, none, so it stays the game's own unlock,
+    /// The Planting level that unlocks the Large Station's recipe by default: 0, none, so it stays the game's unlock,
     /// the Hydroponic Cultivation talent, and installing the mod changes no balance.
     /// </summary>
     public const int LargeUnlockLevel = 0;
@@ -68,7 +68,7 @@ public static class StationRows
     {
         Name = "Hydroponic Station (Small)",
         Size = "Small",
-        // Far above the game's own ids (1.1.20151: item 70152, furniture 90291, recipe 1703, plant row 21), and clear of
+        // Far above the game's ids (1.1.20151: item 70152, furniture 90291, recipe 1703, plant row 21), and clear of
         // Wind Power's 910000 range.
         Ids = new RowIds(Item: 920001, Furniture: 920001, Plant: 921, Recipe: 9201, Action: 100920001, Effect: 100920001),
         Stock = new RowIds(Item: 14067, Furniture: 60006, Plant: 17, Recipe: LargeRecipe, Action: 100014067, Effect: 100014067),

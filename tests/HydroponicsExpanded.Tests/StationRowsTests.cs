@@ -101,7 +101,7 @@ public class StationRowsTests
         Assert.Equal(new[] { 20102, 20104, 20104 }, (int[])Field(plan, Table.Recipe, "perfect_item_id"));
     }
 
-    // The game's own recipe for the Large Station, as recipe 319 lists it in 1.1.20151. Two recipes with one key are
+    // The game's recipe for the Large Station, as recipe 319 lists it in 1.1.20151. Two recipes with one key are
     // filed as one, and only one of them shows at the workbench.
     private static readonly int[] LargeMaterials = { 20102, 20104, 20210, 20210, 20361, 20362 };
 
@@ -156,7 +156,7 @@ public class StationRowsTests
         Assert.Equal(keys.Count, keys.Distinct().Count());
     }
 
-    // The web UI finds the furniture's and the package's icon at the path the rows give, next to the game's own folders.
+    // The web UI finds the furniture's and the package's icon at the path the rows give, next to the game's folders.
     [Theory]
     [InlineData("Small")]
     [InlineData("Medium")]
@@ -214,7 +214,7 @@ public class StationRowsTests
         Assert.Equal(new[] { "Recipe 555 already uses the same materials, so only one of the two could be crafted" }, problems);
     }
 
-    // Taking a station down gives back about half of what it was made from, like the game's own furniture, so the grow
+    // Taking a station down gives back about half of what it was made from, like the game's furniture, so the grow
     // box's leftovers never come out of a station.
     [Fact]
     public void TakingAStationDownGivesBackHalfOfItsOwnMaterials()

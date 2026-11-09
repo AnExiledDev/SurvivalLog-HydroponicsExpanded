@@ -10,7 +10,7 @@ namespace HydroponicsExpanded.Adapters;
 
 /// <summary>
 /// Puts each station's icon, and one for each colour the Small and Medium can be crafted in, where the game's web UI
-/// looks for pictures, next to the game's own furniture icons. The coloured ones are made from the plain icon the way
+/// looks for pictures, next to the game's furniture icons. The coloured ones are made from the plain icon the way
 /// the dye shader colours the model. An icon is written only when the file there is missing or differs, so a mod update
 /// brings its new icon.
 /// </summary>
@@ -63,7 +63,7 @@ internal static class StationIcon
         }
     }
 
-    // The Large Station's coloured packages are the game's own, with the game's own icons.
+    // The Large Station's coloured packages are the game's, with the game's icons.
     private static string PlaceLarge(string folder)
     {
         const string name = "Hydroponic Station (Large)";
