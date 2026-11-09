@@ -1,5 +1,5 @@
 Name: Hydroponics Expanded
-Summary: Adds Small and Medium Hydroponic Stations that grow one or two plants with no care, like the game's Large one, and gives the Large a matching new model. Each has its own model and icon, can be dyed, and is crafted next to the Large or bought from the flowerpot shops. Power, growth, materials and prices are settings, and one setting makes removal safe.
+Summary: Adds Small and Medium Hydroponic Stations that grow one or two plants with no care, like the game's Large one, and gives the Large a matching new model. Each has its own model and icon, can be dyed, and is crafted next to the Large or bought in flowerpot shops. Power, growth, materials and prices are settings, and one setting makes removal safe.
 
 Description (BBCode):
 [center][img]https://sldb.core-directive.com/media/save/3-remove-with-care.png[/img][/center]
