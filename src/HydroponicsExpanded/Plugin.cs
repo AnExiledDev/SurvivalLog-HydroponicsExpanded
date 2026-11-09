@@ -13,7 +13,7 @@ namespace HydroponicsExpanded;
 public sealed class Plugin : BasePlugin
 {
     private const string Guid = "com.dev.survivallog.hydroponicsexpanded";
-    private const string Version = "0.1.5";
+    private const string Version = "0.1.6";
 
     public override void Load()
     {

@@ -348,27 +348,31 @@ internal static class StationModel
     }
 
     /// <summary>
-    /// Puts the stock prefab's light sources just under the model's grow light bar. They hang where the stock lamp was,
-    /// which is far above the Small and Medium bars, so the light seemed to come from the ceiling.
+    /// Brings the stock prefab's light sources down to just under the model's grow light bar. The grow box lamp hangs
+    /// far above the Small and Medium bars, and shows its glow with a beam of its own beside the light, so both move.
+    /// The Large tank's side lights already shine from low down and stay.
     /// </summary>
     private static void LowerLamps(GameObject copy, Transform ours, Model model, Transform? watering, Look look)
     {
         if (model.Lowest(GrowLedName) is not float bottom) return;
 
-        var height = ours.TransformPoint(Unity(new Numerics.Vector3(0f, bottom - LampBelowBar, 0f))).y;
+        var underBar = ours.TransformPoint(Unity(new Numerics.Vector3(0f, bottom - LampBelowBar, 0f))).y;
         var moved = new List<string>();
 
-        foreach (var light in copy.GetComponentsInChildren<Light>(true))
+        foreach (var source in copy.GetComponentsInChildren<Transform>(true))
         {
-            if (IsUnder(light.transform, watering)) continue;
+            if (IsUnder(source, watering) || !Lamps.IsSource(source.GetComponents<Component>().Select(part => part.GetIl2CppType().FullName))) continue;
 
-            var at = light.transform.position;
+            var at = source.position;
+            var height = Lamps.Height(at.y, underBar);
 
-            moved.Add($"{at.y:0.00}");
-            light.transform.position = new UnityEngine.Vector3(at.x, height, at.z);
+            if (height == at.y) continue;
+
+            source.position = new UnityEngine.Vector3(at.x, height, at.z);
+            moved.Add($"{source.name} from {at.y:0.00}");
         }
 
-        _log(moved.Count == 0 ? $"the {look.Name}'s stock prefab has no light sources to move" : $"the {look.Name}'s {moved.Count} light sources moved from {string.Join(", ", moved)} m to {height:0.00} m, under its grow light");
+        _log(moved.Count == 0 ? $"the {look.Name}'s light sources all hang under its grow light already" : $"the {look.Name}'s light sources moved to {underBar:0.00} m, under its grow light: {string.Join(", ", moved)} m");
     }
 
     private static bool IsUnder(Transform part, Transform? parent)

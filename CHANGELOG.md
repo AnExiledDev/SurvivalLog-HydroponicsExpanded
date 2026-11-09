@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.1.6
+
+- The Small's and Medium's glowing light beam now starts at their own light bar too. 0.1.5 moved only the light itself, so the beam you see still came from high up.
+- The Large's lights are back where they were in 0.1.4, low by the water, after 0.1.5 lifted them to the top where they lit nothing.
+- Made for Survival Log 1.1.20719.
+
 ## 0.1.5
 
 - The Small and Medium can now be crafted in any of the 8 colours, like the Large: pick a colour on the recipe card and one dye is added to the materials. Each coloured package has its own icon.
