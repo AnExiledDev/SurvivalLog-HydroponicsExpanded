@@ -99,4 +99,13 @@ public class UnlocksTests
         Assert.Equal(new[] { Small, Medium }, Due(5, 0, 0, 4, Large));
         Assert.Equal(new[] { Small, Medium }, Due(1, 0, 0, 0, Large));
     }
+
+    [Fact]
+    public void By_default_no_planting_level_hands_out_the_large_stations_recipe()
+    {
+        // The Large is the game's own station; its recipe stays the talent's until the player sets a level.
+        var due = Unlocks.RecipesDue(Unlocks.TopPlantingLevel, (StationRows.LargeRecipe, StationRows.LargeUnlockLevel), new (int, int)[0], new int[0]);
+
+        Assert.DoesNotContain(StationRows.LargeRecipe, due);
+    }
 }

@@ -51,8 +51,11 @@ public static class StationRows
     /// <summary>The Large Station's first coloured recipe (Sage Green); the other seven follow it, a dye slot each.</summary>
     public const int LargeDyedRecipe = 1377;
 
-    /// <summary>The Planting level that unlocks the Large Station's recipe by default. The game's own unlock is the Hydroponic Cultivation talent.</summary>
-    public const int LargeUnlockLevel = 5;
+    /// <summary>
+    /// The Planting level that unlocks the Large Station's recipe by default: 0, none, so it stays the game's own unlock,
+    /// the Hydroponic Cultivation talent, and installing the mod changes no balance.
+    /// </summary>
+    public const int LargeUnlockLevel = 0;
 
     /// <summary>The Large Station's own prefab, and the one the mod builds for its new look.</summary>
     public const string LargeStockPrefab = "P_WaterTank_02";

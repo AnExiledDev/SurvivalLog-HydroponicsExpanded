@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.1.9
+
+- The Hydroponic Station (Large)'s recipe is now the game's own unlock by default, the Hydroponic Cultivation talent: `[LargeStation] UnlockLevel` defaults to `0`. Set it to `5` for the old default. A value you already saved is kept.
+- Made for Survival Log 1.1.20719.
+
 ## 0.1.8
 
 - Now needs Exiled's Toolkit 0.19.0 or newer, so a setting changed on the Mod Manager's Mods screen always takes effect without a restart.

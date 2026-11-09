@@ -14,7 +14,7 @@ namespace HydroponicsExpanded;
 public sealed class Plugin : BasePlugin
 {
     private const string Guid = "com.dev.survivallog.hydroponicsexpanded";
-    private const string Version = "0.1.8";
+    private const string Version = "0.1.9";
 
     /// <summary>Exiled's Toolkit: applies each setting as soon as it changes, and reads the game's singletons safely.</summary>
     private const string ToolkitGuid = "com.dev.survivallog.exiledtoolkit";
@@ -31,8 +31,8 @@ public sealed class Plugin : BasePlugin
             "让游戏自带的全光谱水培站（大）换上和小型、中型水培站一样的模型。关掉则用游戏原本的样子。改动对之后放置或读取的水培站生效：重新读取存档即可看到已摆放的水培站的变化。");
 
         var largeUnlock = Config.Bind("LargeStation", "UnlockLevel", StationRows.LargeUnlockLevel, new ConfigDescription(
-            "The Planting level that unlocks the Hydroponic Station (Large)'s recipe, which also unlocks the Small and Medium ones. 0 leaves it to the game's Hydroponic Cultivation talent, which unlocks it at any level. A run already at this level gets the recipe when its save loads.\n" +
-            "种植等级达到多少时解锁全光谱水培站（大）的配方，同时也会解锁小型和中型水培站的配方。0 表示只靠游戏的「无土栽培」天赋解锁，任何等级都可以。已经达到这个等级的存档在读取时就会获得配方。",
+            "The Planting level that unlocks the Hydroponic Station (Large)'s recipe, which also unlocks the Small and Medium ones. 0, the default, leaves it to the game's Hydroponic Cultivation talent, which unlocks it at any level. A run already at this level gets the recipe when its save loads.\n" +
+            "种植等级达到多少时解锁全光谱水培站（大）的配方，同时也会解锁小型和中型水培站的配方。0（默认）表示只靠游戏的「无土栽培」天赋解锁，任何等级都可以。已经达到这个等级的存档在读取时就会获得配方。",
             new AcceptableValueRange<int>(0, Unlocks.TopPlantingLevel)));
         LiveSettings.Watch(largeUnlock, level => CurrentSettings.LargeUnlockLevel = level);
 
