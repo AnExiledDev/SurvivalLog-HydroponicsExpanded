@@ -4,6 +4,7 @@ using GameCore.HotUpdate;
 using GameCore.HotUpdate.Battle.Logic;
 using HydroponicsExpanded.Core;
 using Il2CppInts = Il2CppSystem.Collections.Generic.List<int>;
+using ExiledToolkit.Game;
 
 namespace HydroponicsExpanded.Adapters;
 

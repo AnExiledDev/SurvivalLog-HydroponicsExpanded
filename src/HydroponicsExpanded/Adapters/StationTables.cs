@@ -7,6 +7,7 @@ using Il2CppInterop.Runtime.InteropTypes;
 using HydroponicsExpanded.Core;
 using Il2CppDictionary = Il2CppSystem.Collections.Generic;
 using Il2CppInts = Il2CppSystem.Collections.Generic.List<int>;
+using ExiledToolkit.Game;
 
 namespace HydroponicsExpanded.Adapters;
 

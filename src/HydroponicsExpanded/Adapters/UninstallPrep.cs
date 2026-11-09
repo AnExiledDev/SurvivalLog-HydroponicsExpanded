@@ -5,6 +5,7 @@ using GameCore.HotUpdate.Battle.Logic;
 using HydroponicsExpanded.Core;
 using Il2CppItemSaves = Il2CppSystem.Collections.Generic.List<GameCore.HotUpdate.ItemSave>;
 using Il2CppStock = Il2CppSystem.Collections.Generic.Dictionary<int, int>;
+using ExiledToolkit.Game;
 
 namespace HydroponicsExpanded.Adapters;
 

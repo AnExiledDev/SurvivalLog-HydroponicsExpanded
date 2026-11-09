@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.1.8
+
+- Now needs Exiled's Toolkit 0.19.0 or newer, so a setting changed on the Mod Manager's Mods screen always takes effect without a restart.
+- Made for Survival Log 1.1.20719.
+
 ## 0.1.7
 
 - The Mod Manager's Mods screen links to this mod's GitHub page and changelog.

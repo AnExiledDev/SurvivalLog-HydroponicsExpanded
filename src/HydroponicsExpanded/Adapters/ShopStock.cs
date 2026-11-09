@@ -4,6 +4,7 @@ using GameCore.HotUpdate;
 using GameCore.HotUpdate.Battle.Logic;
 using HarmonyLib;
 using HydroponicsExpanded.Core;
+using ExiledToolkit.Game;
 
 namespace HydroponicsExpanded.Adapters;
 
