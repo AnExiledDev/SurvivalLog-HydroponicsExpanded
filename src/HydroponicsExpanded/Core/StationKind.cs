@@ -1,13 +1,17 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace HydroponicsExpanded.Core;
 
 /// <summary>The ids of one station's six rows: the recipe crafts the package item, which unpacks into the furniture, whose plant row says how it grows.</summary>
 public sealed record RowIds(int Item, int Furniture, int Plant, int Recipe, int Action, int Effect);
 
-/// <summary>What the player sets for one station. Materials is written as id:count pairs, "20102:1, 20104:1".</summary>
-public sealed record StationSettings(int PowerCost, float GrowthBoost, string Materials, int ShopPrice, int ShopStock);
+/// <summary>
+/// What the player sets for one station. Materials is written as id:count pairs, "20102:1, 20104:1". Returns is what
+/// taking it down gives back, written the same way: blank gives back ReturnPercent of the materials, "none" nothing.
+/// </summary>
+public sealed record StationSettings(int PowerCost, float GrowthBoost, string Materials, int ShopPrice, int ShopStock, int ReturnPercent = MaterialList.DefaultReturnPercent, string Returns = "");
 
 /// <summary>
 /// One hydroponic station the mod adds: the grow box it copies (its rows, its prefab and the spot it fits), its own ids,
@@ -63,4 +67,9 @@ public sealed record StationKind
     public string WebIcon => "../../" + StationRows.WebIconFolder + "/" + IconFile;
 
     public string Key(string part) => $"HydroponicsExpanded_{Size}_{part}";
+
+    /// <summary>Its section of the settings, SmallStation or MediumStation.</summary>
+    public string Section => Size + "Station";
+
+    public string ChineseName => Texts.First(text => text.Key == Key("Name")).Zh;
 }

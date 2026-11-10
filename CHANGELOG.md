@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.1.11
+
+- New setting `[Dismantle] ReturnPercent` (default `50`): how much of a station's materials taking it down gives back. `0` gives nothing and `100` gives back everything.
+- New setting `Returns` for each station (blank by default): what taking it down gives back. Blank follows `ReturnPercent`, `none` gives nothing back, and a list gives back exactly that.
+- On the Mod Manager's Mods screen, `Returns` shows as item cards like `Materials`, and the screen says why a station cannot use a list, such as one with the same materials as another recipe.
+- Made for Survival Log 1.1.20719.
+
 ## 0.1.10
 
 - The water lines on the Medium and Large now drop into the outer side of each bay, the same on the left and the right. Before, one line came down on top of the big pot's plate, and on the Large the front and back lines ran on top of each other.

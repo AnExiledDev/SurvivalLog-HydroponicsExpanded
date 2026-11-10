@@ -16,12 +16,13 @@ Each station's pots change with what is planted: a pot in every bay for small pl
 - The recipes are at the workbench next to the Large's.
 - The Small's package takes 1 Container, 1 Wire, 1 Electronic Components and 1 Iron Rod. The Medium's takes 1 Container, 1 Wire, 2 Electronic Components and 1 Iron Rod.
 - Before the disaster, the flowerpot shops that sell the grow box of the same size sell 2 of each station: the Small for 60 (Flowerpots, Small Flowerpots, Electronic Flowerpots) and the Medium for 100 (Flowerpots, Medium Flowerpots, Electronic Flowerpots).
-- Taking a station down gives back about half of what its package took.
+- Taking a station down gives back about half of what its package took. The `ReturnPercent` setting changes how much, and each station's `Returns` setting can name exactly what it gives back instead.
+- On the Mod Manager's Mods screen (0.14.0 or newer), each station's materials and what it gives back show as item cards you pick from every item in the game. The screen shows what the recipe is worth, warns when taking the station down would give back more than that, and says when the station cannot use a list, such as one with exactly the same materials as another recipe.
 - **Test buttons**: with Cheat Menu installed, its Mod tests tab shows the stations' rows and looks, or unlocks their recipes right away.
 
 ## Power
 
-The Hydroponic Station (Large) draws 6 for four plants. The Small draws 2 and the Medium 3 by default, and every station's power, growth boost, materials, shop price and shop stock are settings (see Settings).
+The Hydroponic Station (Large) draws 6 for four plants. The Small draws 2 and the Medium 3 by default, and every station's power, growth boost, materials, what it gives back when taken down, shop price and shop stock are settings (see Settings).
 
 This is an early test build.
 
@@ -48,7 +49,7 @@ Then delete `HydroponicsExpanded.dll` from the `BepInEx\plugins` folder. For a c
 - Survival Log 1.1.20719.
 - BepInEx for Survival Log.
 - [Exiled's Toolkit](https://github.com/AnExiledDev/SurvivalLog-ExiledToolkit) 0.19.0 or newer. Hydroponics Expanded does not load without it. It applies settings changed on the Mod Manager's Mods screen without a restart.
-- Optional: [Mod Manager](https://www.nexusmods.com/survivallog/mods/73). With it, you can change every setting in game on its Mods screen and see what each one does, without opening the config file.
+- Optional: [Mod Manager](https://www.nexusmods.com/survivallog/mods/73). With it, you can change every setting in game on its Mods screen and see what each one does, without opening the config file. Each station's materials and what it gives back when taken down show as item cards with the item's picture and name: pick an item from a list and set how many, with no item ids to look up.
 
 ## Install
 

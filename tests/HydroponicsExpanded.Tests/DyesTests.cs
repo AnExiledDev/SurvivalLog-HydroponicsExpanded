@@ -94,7 +94,7 @@ public class DyesTests
     [Fact]
     public void ADyeInTheMaterialsSettingIsRefused()
     {
-        var (materials, problem) = MaterialList.Choose("20102:2, 20366:1", StationRows.Medium.Defaults.Materials, _ => true, _ => null, Array.Empty<IReadOnlyList<int>>());
+        var (materials, problem) = MaterialList.Choose("20102:2, 20366:1", StationRows.Medium, _ => true, _ => null, Array.Empty<(StationKind, IReadOnlyList<int>, bool)>());
 
         Assert.NotNull(problem);
         Assert.Equal(MaterialList.Standard(StationRows.Medium.Defaults.Materials), materials);

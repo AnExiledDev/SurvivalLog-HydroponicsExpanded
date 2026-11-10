@@ -133,7 +133,8 @@ public static class StationRows
 
     /// <param name="materials">The recipe's materials, each id once per piece.</param>
     /// <param name="settings">The power, growth boost and price to write.</param>
-    public static StationPlan Plan(StationKind kind, IReadOnlyList<int> materials, StationSettings settings)
+    /// <param name="givenBack">What taking it down gives back; when left out, the settings' Return percent share of the materials.</param>
+    public static StationPlan Plan(StationKind kind, IReadOnlyList<int> materials, StationSettings settings, IReadOnlyList<int>? givenBack = null)
     {
         var ids = kind.Ids;
         var package = kind.Key("Package");
@@ -192,7 +193,7 @@ public static class StationRows
                 new RowField("ICON", kind.WebIcon),
                 new RowField("FurniturePrice", settings.ShopPrice),
                 // What taking it down gives back. The copied row would give the grow box's parts.
-                new RowField("RemoveGet", MaterialList.GivenBack(materials)),
+                new RowField("RemoveGet", (givenBack ?? MaterialList.GivenBack(materials, settings.ReturnPercent)).ToArray()),
             }),
             // The Large Station's plant row: the light and heat it gives when powered, and the pests, weeds and dryness it
             // keeps off, with the grow box's plant count.

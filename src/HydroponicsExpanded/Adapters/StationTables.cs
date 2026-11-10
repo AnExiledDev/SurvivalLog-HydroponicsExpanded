@@ -136,19 +136,19 @@ internal sealed class StationTables
         var written = new List<(StationKind Kind, StationSettings Settings, int[] Materials)>();
         var items = tables.Items!;
         var recipes = tables.Recipes!;
+        var choices = StationChoices.Of(settings, items.ContainsKey, list => RecipeUsing(recipes, list));
 
         for (var i = 0; i < StationRows.All.Count; i++)
         {
             var kind = StationRows.All[i];
             var wanted = settings[i];
+            var (_, materials, problem, back, returnsProblem, _, _) = choices[i];
 
-            // The earlier stations' materials as written, and the later ones' defaults, which each may fall back to.
-            var taken = written.Select(done => (IReadOnlyList<int>)done.Materials).Concat(StationRows.All.Skip(i + 1).Select(later => (IReadOnlyList<int>)MaterialList.Standard(later.Defaults.Materials))).ToList();
-            var (materials, problem) = MaterialList.Choose(wanted.Materials, kind.Defaults.Materials, items.ContainsKey, list => RecipeUsing(recipes, list), taken);
+            if (problem != null) _log($"{kind.Name}: {problem.Log}, so it takes its default materials");
 
-            if (problem != null) _log($"{kind.Name}: {problem}, so it takes its default materials");
+            if (returnsProblem != null) _log($"{kind.Name}: {returnsProblem.Log}, so taking it down gives back {wanted.ReturnPercent}% of its materials");
 
-            var plan = StationRows.Plan(kind, materials, wanted);
+            var plan = StationRows.Plan(kind, materials, wanted, back);
             var problems = StationRows.Problems(plan, (table, id) => views[table].SlotAt(id, _ours), list => RecipeUsing(recipes, list));
 
             if (problems.Count > 0)
@@ -392,7 +392,10 @@ internal sealed class StationTables
         }
     }
 
-    private int? RecipeUsing(Il2CppDictionary.Dictionary<int, Config_ProductionList> recipes, IReadOnlyList<int> materials)
+    private int? RecipeUsing(Il2CppDictionary.Dictionary<int, Config_ProductionList> recipes, IReadOnlyList<int> materials) => RecipeUsing(recipes, materials, recipe => _ours.Contains(recipe.Pointer));
+
+    /// <summary>The id of a recipe other than ours made of these materials in any order, or null.</summary>
+    internal static int? RecipeUsing(Il2CppDictionary.Dictionary<int, Config_ProductionList> recipes, IReadOnlyList<int> materials, Func<Config_ProductionList, bool> isOurs)
     {
         var key = StationRows.MaterialKey(materials);
 
@@ -400,7 +403,7 @@ internal sealed class StationTables
         {
             var recipe = pair.Value;
 
-            if (recipe == null || _ours.Contains(recipe.Pointer) || recipe.MaterialList == null || recipe.MaterialList.Count != materials.Count) continue;
+            if (recipe == null || isOurs(recipe) || recipe.MaterialList == null || recipe.MaterialList.Count != materials.Count) continue;
 
             if (StationRows.MaterialKey(ToArray(recipe.MaterialList)) == key) return pair.Key;
         }

@@ -225,6 +225,17 @@ public class StationRowsTests
     }
 
     [Fact]
+    public void TakingAStationDownGivesBackWhatItIsHandedOrTheSetShare()
+    {
+        var materials = new[] { 20102, 20102, 20102, 20104, 20210, 20210 };
+        var all = StationRows.Plan(StationRows.Small, materials, StationRows.Small.Defaults with { ReturnPercent = 100 });
+        var listed = StationRows.Plan(StationRows.Small, materials, StationRows.Small.Defaults, new[] { 20312, 20312 });
+
+        Assert.Equal(materials, (int[])Field(all, Table.Furniture, "RemoveGet"));
+        Assert.Equal(new[] { 20312, 20312 }, (int[])Field(listed, Table.Furniture, "RemoveGet"));
+    }
+
+    [Fact]
     public void MaterialKeyIgnoresOrderButNotCount()
     {
         Assert.Equal(StationRows.MaterialKey(new[] { 3, 1, 2, 1 }), StationRows.MaterialKey(new[] { 1, 1, 2, 3 }));
