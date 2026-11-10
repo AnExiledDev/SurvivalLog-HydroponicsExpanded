@@ -85,7 +85,7 @@ public sealed class Plugin : BasePlugin
             $"{chinese}运行时的耗电量。全光谱水培站（大）耗电 6，{growBoxChinese}耗电 {growBoxPower}。",
             new AcceptableValueRange<int>(0, 50)));
         var growth = Config.Bind(section, "GrowthBoost", defaults.GrowthBoost, new ConfigDescription(
-            $"How much faster plants grow in the {name} while it has power: 0.5 is half as fast again, the same as the Hydroponic Station (Large). The {growBox} gives 0.3.\n" +
+            $"How much faster plants grow in the {name} while it has power: 0.5 is 50% faster, the same as the Hydroponic Station (Large). The {growBox} gives 0.3.\n" +
             $"{chinese}通电时植物生长加快多少：0.5 表示快一半，和全光谱水培站（大）一样。{growBoxChinese}是 0.3。",
             new AcceptableValueRange<float>(0f, 5f)));
         var materials = Config.Bind(section, "Materials", defaults.Materials, new ConfigDescription(
@@ -97,7 +97,7 @@ public sealed class Plugin : BasePlugin
             $"灾难前花盆商店卖{chinese}的价格。{growBoxChinese}在那里卖 {growBoxPrice}，全光谱水培站（大）卖 150。",
             new AcceptableValueRange<int>(0, 9999)));
         var stock = Config.Bind(section, "ShopStock", defaults.ShopStock, new ConfigDescription(
-            $"How many {name}s each flowerpot shop that sells the {growBox} has for sale before the disaster. 0 takes them off the shelves. A shop that already has more than this is brought down to it; stations already bought stay yours.\n" +
+            $"How many {name}s each flowerpot shop that sells the {growBox} has for sale before the disaster. 0 takes them off the shelves. A shop that already has more than this is brought down to it, and stations you already bought stay yours.\n" +
             $"灾难前每家出售{growBoxChinese}的花盆商店有几台{chinese}出售。0 表示不卖。已有更多存货时会减到这个数；已经买下的不受影响。",
             new AcceptableValueRange<int>(0, 20)));
         var unlock = Config.Bind(section, "UnlockLevel", kind.UnlockLevel, new ConfigDescription(
