@@ -30,7 +30,7 @@ Hydroponics Expanded adds a Small and a Medium Hydroponic Station to Survival Lo
 [/list]
 
 [size=5]Known issues[/size]
-This is an early test build. A Large station already placed takes its new look, or its old one, the next time the save loads. The dyed Large packages keep the game's icon.
+A Large station already placed takes its new look, or its old one, the next time the save loads. The dyed Large packages keep the game's icon.
 
 [center][img]https://sldb.core-directive.com/img/mods-banner.jpg[/img]
 [size=4][url=https://www.nexusmods.com/survivallog/mods/73]Get Mod Manager[/url] to set up all your mods in game  |  [url=https://sldb.core-directive.com/en/]Open the Survival Log wiki[/url] for items, recipes and maps[/size][/center]
@@ -65,19 +65,19 @@ Open source under MIT: [url=https://github.com/AnExiledDev/SurvivalLog-Hydroponi
 [line]
 [size=5]简体中文[/size]
 
-水培扩展为《Survival Log》新增小型和中型全光谱水培站，并给游戏自带的全光谱水培站（大）换上与之相配的新模型。
+水培扩展为《Survival Log》新增小型和中型全光谱水培站，并给游戏里的全光谱水培站（大）换上与之相配的新模型。
 
 [size=5]主要功能[/size]
 [list]
 [*][b]两种新水培站[/b]：全光谱水培站（小）可种一株小型植物，占用植物灯培育箱（小）的位置。全光谱水培站（中）可种两株小型植物或一株中型植物，占用植物灯培育箱（中）的位置。每种都有自己的模型和图标。[/*]
 [*][b]和大型的一样[/b]：通电时，全光谱植物灯让植物生长快一半，还能保暖，并防止虫害、杂草和干旱，作物直到收获都无需照料。断电后灯会熄灭，这些效果也随之停止。[/*]
-[*][b]新的大型水培站[/b]：游戏自带的全光谱水培站（大）换上与新水培站相配的模型和图标。一个设置就能换回原来的样子。[/*]
+[*][b]新的大型水培站[/b]：游戏里的全光谱水培站（大）换上与新水培站相配的模型和图标。一个设置就能换回原来的样子。[/*]
 [*][b]花盆随作物变化[/b]：每台水培站的花盆会随种下的作物改变。小型植物每格一个花盆；中型植物用一个横跨两格的大花盆；玉米、西瓜这样的大型植物用一个横跨四格的大花盆，植物长在花盆正中，不会压在隔板上。植物灯挂得足够高，能容下每台水培站可种的最高作物，所以大型水培站高约 3.2 米。[/*]
 [*][b]解锁[/b]：种植等级 3 解锁小型，4 解锁中型。大型保持游戏原本的解锁方式，即「无土栽培」天赋，除非你也给它设一个等级。获得大型水培站的配方后（无论是靠天赋还是等级），另外两种也会一起解锁。已经超过某个等级的存档在读取时就会获得对应配方，每个等级都可以在设置里改。[/*]
 [*][b]可以制作[/b]：配方在工作台上，紧挨着大型水培站的配方。小型包裹需要 1 个容器、1 个铁丝、1 个电器元件和 1 个铁棍。中型需要 1 个容器、1 个铁丝、2 个电器元件和 1 个铁棍。拆除时返还大约一半材料，返还多少可以在设置里改。[/*]
 [*][b]也可以买[/b]：灾难前，出售同尺寸植物灯培育箱的花盆商店各卖 2 台，小型 60，中型 100。[/*]
 [*][b]按你的方式设置[/b]：每种水培站的耗电、生长加速、材料、拆除返还、商店价格和库存都由你决定，可以在 Mod Manager 的「模组」界面改，也可以改配置文件。用 Mod Manager 0.14.0 或更新版本时，材料用物品卡片来选，拆除返还比配方还值钱时界面会提醒你。[/*]
-[*][b]可以染色[/b]：制作时可以选 8 种颜色中的任意一种，之后也能像游戏自带的家具一样再染色。橙色框架会变成所选颜色，水槽、钢件和水保持原样。[/*]
+[*][b]可以染色[/b]：制作时可以选 8 种颜色中的任意一种，之后也能像游戏里的家具一样再染色。橙色框架会变成所选颜色，水槽、钢件和水保持原样。[/*]
 [*][b]可以放心移除[/b]：游戏会把每台水培站存成同尺寸的植物灯培育箱，所以移除本模组后存档仍能读取。移除前请先打开 UninstallPrep 设置并读取存档：背包和储物里的水培站包裹会变成植物灯培育箱包裹，不会丢失。然后存档、退出，再删除 HydroponicsExpanded.dll。[/*]
 [*][b]中英双语[/b]：所有名称和说明都有中文和英文。[/*]
 [/list]
@@ -91,7 +91,7 @@ Open source under MIT: [url=https://github.com/AnExiledDev/SurvivalLog-Hydroponi
 [/list]
 
 [size=5]已知问题[/size]
-这是早期测试版。已经摆好的大型水培站要在下次读档时才会换成新样子（或换回原样）。染色的大型水培站包裹仍是游戏原来的图标。
+已经摆好的大型水培站要在下次读档时才会换成新样子（或换回原样）。染色的大型水培站包裹仍是游戏原来的图标。
 
 [url=https://www.nexusmods.com/survivallog/mods/73]获取 Mod Manager[/url]，在游戏里设置所有模组。[url=https://sldb.core-directive.com/zh/]打开 Survival Log 维基[/url]，物品、配方、地图一查就有。
 

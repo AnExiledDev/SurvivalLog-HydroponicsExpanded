@@ -24,8 +24,6 @@ Each station's pots change with what is planted: a pot in every bay for small pl
 
 The Hydroponic Station (Large) draws 6 for four plants. The Small draws 2 and the Medium 3 by default, and every station's power, growth boost, materials, what it gives back when taken down, shop price and shop stock are settings (see Settings).
 
-This is an early test build.
-
 ## Settings
 
 Settings live in `BepInEx\config\com.dev.survivallog.hydroponicsexpanded.cfg`, created the first time the game starts with the mod. Change them in game on the Mod Manager's Mods screen, or edit the file while the game is closed. See [CONFIG.md](CONFIG.md) for every setting.

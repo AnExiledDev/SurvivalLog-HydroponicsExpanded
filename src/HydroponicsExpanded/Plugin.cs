@@ -28,7 +28,7 @@ public sealed class Plugin : BasePlugin
 
         var newLook = Config.Bind("LargeStation", "NewLook", true,
             "Gives the game's Hydroponic Station (Large) the same look as the Small and Medium ones. Turn it off for the game's look. A change shows on stations placed or loaded afterwards: load the save again to see it on the ones already standing.\n" +
-            "让游戏自带的全光谱水培站（大）换上和小型、中型水培站一样的模型。关掉则用游戏原本的样子。改动对之后放置或读取的水培站生效：重新读取存档即可看到已摆放的水培站的变化。");
+            "让游戏里的全光谱水培站（大）换上和小型、中型水培站一样的模型。关掉则用游戏原本的样子。改动对之后放置或读取的水培站生效：重新读取存档即可看到已摆放的水培站的变化。");
 
         var largeUnlock = Config.Bind("LargeStation", "UnlockLevel", StationRows.LargeUnlockLevel, new ConfigDescription(
             "The Planting level that unlocks the Hydroponic Station (Large)'s recipe, which also unlocks the Small and Medium ones. 0, the default, leaves it to the game's Hydroponic Cultivation talent, which unlocks it at any level. A run already at this level gets the recipe when its save loads.\n" +
@@ -38,11 +38,13 @@ public sealed class Plugin : BasePlugin
 
         _returnPercent = Config.Bind("Dismantle", "ReturnPercent", MaterialList.DefaultReturnPercent, new ConfigDescription(
             "How much of a station's materials taking it down gives back, as a percent of its recipe. 50 is about half, like the game's furniture. 0 gives nothing back and 100 gives back everything. Each material's share is rounded down, then topped up one at a time to the right total. A station whose Returns list is filled in gives back that list instead.\n" +
-            "拆除水培站时返还多少材料，按配方的百分比计。50 约为一半，和游戏自带的家具一样。0 什么都不返还，100 全部返还。每种材料按比例向下取整，再逐个补足到应有的总数。填了 Returns 清单的水培站按清单返还。",
+            "拆除水培站时返还多少材料，按配方的百分比计。50 约为一半，和普通家具一样。0 什么都不返还，100 全部返还。每种材料按比例向下取整，再逐个补足到应有的总数。填了 Returns 清单的水培站按清单返还。",
             new AcceptableValueRange<int>(0, 100)));
         BindSettings(StationRows.Small, "Plant Grow Box (Small)", "植物灯培育箱（小）", 25, 1);
         BindSettings(StationRows.Medium, "Plant Grow Box (Medium)", "植物灯培育箱（中）", 50, 3);
-        ModManagerAnswers.Settings = () => CurrentSettings.Current;
+        // The Mod Manager asks right after it writes a value, before the live watch has copied it over, so read the
+        // config itself.
+        ModManagerAnswers.Settings = () => StationRows.All.Select(kind => _reads[kind]()).ToList();
         LiveSettings.Watch(newLook, isOn => CurrentSettings.NewLook = isOn);
         LiveSettings.Watch(_uninstallPrep, isOn =>
         {
@@ -118,9 +120,13 @@ public sealed class Plugin : BasePlugin
         LiveSettings.Watch(unlock, level => CurrentSettings.SetUnlockLevel(kind, level));
 
         // Uninstall prep holds the stock at 0, so the shops stop listing the station.
-        LiveSettings.Watch(() => CurrentSettings.Set(kind, new StationSettings(power.Value, growth.Value, materials.Value, price.Value, _uninstallPrep!.Value ? 0 : stock.Value, _returnPercent!.Value, returns.Value)), power, growth, materials, returns, price, stock, _uninstallPrep!, _returnPercent!);
+        StationSettings Read() => new(power.Value, growth.Value, materials.Value, price.Value, _uninstallPrep!.Value ? 0 : stock.Value, _returnPercent!.Value, returns.Value);
+
+        _reads[kind] = Read;
+        LiveSettings.Watch(() => CurrentSettings.Set(kind, Read()), power, growth, materials, returns, price, stock, _uninstallPrep!, _returnPercent!);
     }
 
     private ConfigEntry<bool>? _uninstallPrep;
     private ConfigEntry<int>? _returnPercent;
+    private readonly System.Collections.Generic.Dictionary<StationKind, System.Func<StationSettings>> _reads = new();
 }
