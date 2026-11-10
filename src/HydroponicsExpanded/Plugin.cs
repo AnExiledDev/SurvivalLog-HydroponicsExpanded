@@ -14,7 +14,7 @@ namespace HydroponicsExpanded;
 public sealed class Plugin : BasePlugin
 {
     private const string Guid = "com.dev.survivallog.hydroponicsexpanded";
-    private const string Version = "0.1.9";
+    private const string Version = "0.1.10";
 
     /// <summary>Exiled's Toolkit: applies each setting as soon as it changes, and reads the game's singletons safely.</summary>
     private const string ToolkitGuid = "com.dev.survivallog.exiledtoolkit";

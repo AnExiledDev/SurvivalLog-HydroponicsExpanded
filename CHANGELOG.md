@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.1.10
+
+- The water lines on the Medium and Large now drop into the outer side of each bay, the same on the left and the right. Before, one line came down on top of the big pot's plate, and on the Large the front and back lines ran on top of each other.
+- Made for Survival Log 1.1.20719.
+
 ## 0.1.9
 
 - The Hydroponic Station (Large)'s recipe is now the game's unlock by default, the Hydroponic Cultivation talent: `[LargeStation] UnlockLevel` defaults to `0`. Set it to `5` for the old default. A value you already saved is kept.
