@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using GameCore.HotUpdate;
 using GameCore.HotUpdate.Battle.Logic;
-using HarmonyLib;
 using HydroponicsExpanded.Core;
 using ExiledToolkit.Game;
 
@@ -24,15 +23,16 @@ internal static class ShopStock
     /// <summary>The stock setting last applied to each station, by furniture id.</summary>
     private static readonly Dictionary<int, int> Applied = new();
 
-    private static readonly HashSet<string> Failed = new();
-    private static Action<string> _log = _ => { };
+    private const string IfMissed = "a run already going may not see the stations in its shops";
 
-    public static void Apply(Harmony harmony, Action<string> log)
+    private static PatchKit? _hooks;
+
+    public static void Apply(PatchKit hooks)
     {
-        _log = log;
+        _hooks = hooks;
 
-        Hook(harmony, "OnInit");
-        Hook(harmony, "LoadGame");
+        hooks.Patch(typeof(ShopStock), typeof(BuildShopComponent), "OnInit", postfix: nameof(Fill), consequence: IfMissed);
+        hooks.Patch(typeof(ShopStock), typeof(BuildShopComponent), "LoadGame", postfix: nameof(Fill), consequence: IfMissed);
     }
 
     /// <summary>Moves each open shop's stations to the stock settings in <paramref name="wanted"/>, after the shops' lists were changed to match.</summary>
@@ -71,7 +71,7 @@ internal static class ShopStock
         }
         catch (Exception ex)
         {
-            Fail("restock", ex);
+            _hooks?.Fail("restocking the stations in the open shops", ex);
         }
     }
 
@@ -123,7 +123,7 @@ internal static class ShopStock
         }
         catch (Exception ex)
         {
-            Fail("shop stock", ex);
+            _hooks?.Fail("stocking a shop with the stations", ex);
         }
     }
 
@@ -191,31 +191,5 @@ internal static class ShopStock
         }
 
         return isChanged;
-    }
-
-    private static void Hook(Harmony harmony, string method)
-    {
-        try
-        {
-            var target = AccessTools.Method(typeof(BuildShopComponent), method);
-
-            if (target == null)
-            {
-                _log($"cannot find BuildShopComponent.{method}, so a run already going may not see the stations in its shops");
-
-                return;
-            }
-
-            harmony.Patch(target, postfix: new HarmonyMethod(typeof(ShopStock), nameof(Fill)));
-        }
-        catch (Exception ex)
-        {
-            _log($"cannot hook BuildShopComponent.{method}: {ex.Message}");
-        }
-    }
-
-    private static void Fail(string where, Exception ex)
-    {
-        if (Failed.Add(where)) _log($"the stations' {where} step failed (reported once): {ex}");
     }
 }

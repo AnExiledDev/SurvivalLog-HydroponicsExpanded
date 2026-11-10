@@ -3,6 +3,7 @@ using BepInEx;
 using BepInEx.Configuration;
 using BepInEx.Unity.IL2CPP;
 using ExiledToolkit;
+using ExiledToolkit.Game;
 using HarmonyLib;
 using HydroponicsExpanded.Adapters;
 using HydroponicsExpanded.Core;
@@ -14,7 +15,7 @@ namespace HydroponicsExpanded;
 public sealed class Plugin : BasePlugin
 {
     private const string Guid = "com.dev.survivallog.hydroponicsexpanded";
-    private const string Version = "0.1.11";
+    private const string Version = "0.1.12";
 
     /// <summary>Exiled's Toolkit: applies each setting as soon as it changes, and reads the game's singletons safely.</summary>
     private const string ToolkitGuid = "com.dev.survivallog.exiledtoolkit";
@@ -53,12 +54,12 @@ public sealed class Plugin : BasePlugin
         });
 
         var tables = new StationTables(message => Log.LogInfo(message));
-        var harmony = new Harmony(Guid);
+        var hooks = new PatchKit(new Harmony(Guid), Warn);
         var iconPlaced = false;
 
-        SavePatches.Apply(harmony, message => Log.LogWarning(message));
-        ShopStock.Apply(harmony, message => Log.LogWarning(message));
-        StationModel.Apply(harmony, message => Log.LogInfo(message));
+        SavePatches.Apply(hooks);
+        ShopStock.Apply(hooks);
+        StationModel.Apply(hooks, message => Log.LogInfo(message));
 
         StationTicker.Log = message => Log.LogError(message);
         UninstallPrep.Log = message => Log.LogInfo(message);
@@ -77,6 +78,13 @@ public sealed class Plugin : BasePlugin
         };
         AddComponent<StationTicker>();
         Log.LogInfo($"Hydroponics Expanded {Version} loaded");
+    }
+
+    /// <summary>A hook that could not be placed is an error, so the Mod Manager can show the mod may need an update.</summary>
+    private void Warn(string message)
+    {
+        if (HookFailure.Is(message)) Log.LogError(message);
+        else Log.LogWarning(message);
     }
 
     /// <summary>One section of settings per station. Every one applies live: the station's rows are rewritten when one changes.</summary>

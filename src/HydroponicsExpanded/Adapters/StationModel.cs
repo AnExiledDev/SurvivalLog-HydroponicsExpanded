@@ -6,7 +6,7 @@ using GameCore.HotUpdate;
 using GameCore.HotUpdate.Battle;
 using GameCore.HotUpdate.Battle.Show;
 using GameCore.Scripts;
-using HarmonyLib;
+using ExiledToolkit.Game;
 using Il2CppInterop.Runtime.InteropTypes.Arrays;
 using UnityEngine;
 using UnityEngine.Rendering;
@@ -67,13 +67,16 @@ internal static class StationModel
     private static GameObject? _holder;
     private static bool _seatsFailed;
 
-    public static void Apply(Harmony harmony, Action<string> log)
+    /// <param name="log">For the model's own lines; a hook that cannot be placed is logged by <paramref name="hooks"/>.</param>
+    public static void Apply(PatchKit hooks, Action<string> log)
     {
+        const string ifMissed = "the stations may look like the grow boxes";
+
         _log = log;
 
-        Patch(harmony, AccessTools.Method(typeof(BattleResource), "LoadPrefabWithFallback", new[] { typeof(string) }), prefix: nameof(GiveOurModel));
-        Patch(harmony, AccessTools.Method(typeof(PreLoaderDataExtension), "AddChild"), prefix: nameof(SkipPreloadingOurModel));
-        Patch(harmony, AccessTools.Method(typeof(AgentModel), "OnPlantCreateVisual", new[] { typeof(string), typeof(int) }), postfix: nameof(SeatsForThePlant));
+        hooks.Patch(typeof(StationModel), typeof(BattleResource), "LoadPrefabWithFallback", new[] { typeof(string) }, prefix: nameof(GiveOurModel), consequence: ifMissed);
+        hooks.Patch(typeof(StationModel), typeof(PreLoaderDataExtension), "AddChild", prefix: nameof(SkipPreloadingOurModel), consequence: ifMissed);
+        hooks.Patch(typeof(StationModel), typeof(AgentModel), "OnPlantCreateVisual", new[] { typeof(string), typeof(int) }, postfix: nameof(SeatsForThePlant), consequence: ifMissed);
     }
 
     /// <summary>The station whose prefab is at <paramref name="path"/>, or null.</summary>
@@ -642,24 +645,5 @@ internal static class StationModel
         stream.CopyTo(copy);
 
         return copy.ToArray();
-    }
-
-    private static void Patch(Harmony harmony, System.Reflection.MethodInfo? target, string? prefix = null, string? postfix = null)
-    {
-        if (target == null)
-        {
-            _log("cannot find a model loading method; the stations may look like the grow boxes");
-
-            return;
-        }
-
-        try
-        {
-            harmony.Patch(target, prefix: prefix == null ? null : new HarmonyMethod(typeof(StationModel), prefix), postfix: postfix == null ? null : new HarmonyMethod(typeof(StationModel), postfix));
-        }
-        catch (Exception ex)
-        {
-            _log($"cannot hook {target.DeclaringType?.Name}.{target.Name}: {ex.Message}");
-        }
     }
 }
