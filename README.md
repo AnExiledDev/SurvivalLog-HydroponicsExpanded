@@ -51,7 +51,7 @@ Then delete `HydroponicsExpanded.dll` from the `BepInEx\plugins` folder. For a c
 
 ## Install
 
-Install Exiled's Toolkit, then copy `HydroponicsExpanded.dll` into `BepInEx/plugins`.
+Install Exiled's Toolkit. Then download `HydroponicsExpanded-x.y.z.zip` from the [latest release](https://github.com/AnExiledDev/SurvivalLog-HydroponicsExpanded/releases/latest) or from [Nexus Mods](https://www.nexusmods.com/survivallog/mods/144), and extract it into the game folder (the folder with `SurvivalLog.exe`). It puts `HydroponicsExpanded.dll` in `BepInEx/plugins`.
 
 ## Configuration
 
