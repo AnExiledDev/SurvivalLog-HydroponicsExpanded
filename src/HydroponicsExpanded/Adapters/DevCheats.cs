@@ -18,7 +18,7 @@ public static class DevCheats
     private const string NotInGame = "load a save first";
 
     [DisplayName("Show stations\n查看水培站")]
-    [Description("Shows each hydroponic station's rows as the game holds them now: power, plant count, growth boost, price, whether its recipe is unlocked, and which model the Large Station uses.\n显示游戏当前记录的每种水培站：耗电、可种植数、生长加速、价格、配方是否已解锁，以及大型水培站用的是哪个模型。")]
+    [Description("Shows each hydroponic station as the game has it now: power, plant count, growth boost, price, whether its recipe is unlocked, and which model the Hydroponic Station (Large) uses.\n显示游戏当前记录的每种水培站：耗电、可种植数、生长加速、价格、配方是否已解锁，以及大型水培站用的是哪个模型。")]
     public static string ShowStations()
     {
         var config = GameSingleton.Existing<ConfigManager>();

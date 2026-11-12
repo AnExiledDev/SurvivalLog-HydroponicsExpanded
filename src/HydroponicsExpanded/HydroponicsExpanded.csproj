@@ -43,7 +43,7 @@
   <!-- What the Mod Manager's Mods screen shows about this mod. -->
   <ItemGroup>
     <AssemblyMetadata Include="ModManager.Name" Value="Hydroponics Expanded&#10;水培扩展" />
-    <AssemblyMetadata Include="ModManager.Description" Value="Adds Small and Medium Hydroponic Stations that grow crops with no care, like the Large one, and gives all three a new look.&#10;新增小型和中型水培站，和大型水培站一样无需照料即可种植作物，三种水培站都换上新模型。" />
+    <AssemblyMetadata Include="ModManager.Description" Value="Adds Small and Medium Hydroponic Stations that grow crops with no care, like the Large one, and gives the Large a new look to match.&#10;新增小型和中型水培站，和大型水培站一样无需照料即可种植作物，并给大型水培站换上相配的新模型。" />
     <AssemblyMetadata Include="ModManager.Author" Value="AnExiledDev" />
     <AssemblyMetadata Include="ModManager.Category" Value="Gameplay" />
     <AssemblyMetadata Include="ModManager.GameVersion" Value="1.1.20719" />

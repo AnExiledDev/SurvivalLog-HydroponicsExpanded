@@ -1,15 +1,20 @@
 # Changelog
 
+## 0.1.13
+
+- Clearer wording in the settings and in the stations' descriptions.
+- Made for Survival Log 1.1.20719.
+
 ## 0.1.12
 
-- Now uses Exiled's Toolkit for its shared parts, so it needs Exiled's Toolkit 0.19.0 or newer.
+- Some of the mod's code now comes from Exiled's Toolkit. It still needs Exiled's Toolkit 0.19.0 or newer.
 - Made for Survival Log 1.1.20719.
 
 ## 0.1.11
 
-- New setting `[Dismantle] ReturnPercent` (default `50`): how much of a station's materials taking it down gives back. `0` gives nothing and `100` gives back everything.
-- New setting `Returns` for each station (blank by default): what taking it down gives back. Blank follows `ReturnPercent`, `none` gives nothing back, and a list gives back exactly that.
-- On the Mod Manager's Mods screen, `Returns` shows as item cards like `Materials`, and the screen says why a station cannot use a list, such as one with the same materials as another recipe.
+- New setting `[Dismantle] ReturnPercent` sets how much of its materials a station gives back when you take it down. The default is `50`, `0` gives nothing back and `100` gives back everything.
+- New setting `Returns` for each station sets exactly what it gives back when you take it down. Left blank (the default), it follows `ReturnPercent`. `none` gives nothing back, and a list gives back exactly what it names.
+- On the Mod Manager's Mods screen, `Returns` shows as item cards like `Materials`, and the screen tells you why a station can't use a list, for example one with the same materials as another recipe.
 - Made for Survival Log 1.1.20719.
 
 ## 0.1.10
@@ -19,7 +24,7 @@
 
 ## 0.1.9
 
-- The Hydroponic Station (Large)'s recipe is now the game's unlock by default, the Hydroponic Cultivation talent: `[LargeStation] UnlockLevel` defaults to `0`. Set it to `5` for the old default. A value you already saved is kept.
+- By default, the Hydroponic Station (Large) unlocks with the game's Hydroponic Cultivation talent again, because `[LargeStation] UnlockLevel` now defaults to `0`. Set it to `5` for the old default. A value you already saved is kept.
 - Made for Survival Log 1.1.20719.
 
 ## 0.1.8
@@ -34,8 +39,8 @@
 
 ## 0.1.6
 
-- The Small's and Medium's glowing light beam now starts at their own light bar too. 0.1.5 moved only the light itself, so the beam you see still came from high up.
-- The Large's lights are back where they were in 0.1.4, low by the water, after 0.1.5 lifted them to the top where they lit nothing.
+- The glowing light beam on the Small and Medium now starts at their light bar. 0.1.5 moved only the light itself, so the beam you saw still came from high up.
+- The Large's lights are back where they were in 0.1.4, low by the water. 0.1.5 had lifted them to the top, where they lit nothing.
 - Made for Survival Log 1.1.20719.
 
 ## 0.1.5
@@ -49,9 +54,9 @@
 ## 0.1.4
 
 - The Small and Medium recipes can now be crafted. Before, they showed at the workbench but stayed locked.
-- Planting level unlocks the stations: the Small at level 3, the Medium at 4 and the Large at 5. A run already past a level gets the recipe when the save loads.
+- Reaching a Planting level unlocks the stations: the Small at level 3, the Medium at 4 and the Large at 5. If your save is already past a level, you get the recipe when it loads.
 - Getting the Large's recipe, by its level or by the Hydroponic Cultivation talent, unlocks the Small and Medium too.
-- New settings: `UnlockLevel` for each station. `0` turns the level unlock off for that station.
+- New setting `UnlockLevel` for each station. `0` turns the level unlock off for that station.
 - Made for Survival Log 1.1.20719.
 
 ## 0.1.3
@@ -62,12 +67,12 @@
 
 ## 0.1.2
 
-- With the Mod Manager, each station's `Materials` shows as item cards with a picker, and the station's package beside them with its pieces, weight and value.
+- On the Mod Manager's Mods screen, each station's `Materials` show as item cards you pick from, with the station's package beside them showing its pieces, weight and value.
 - Made for Survival Log 1.1.20151.
 
 ## 0.1.1
 
-- A change to `GrowthBoost` now reaches plants already growing, keeping the growth they have made.
+- Changing `GrowthBoost` now also applies to plants already growing, and they keep the growth they've made so far.
 
 ## 0.1.0
 

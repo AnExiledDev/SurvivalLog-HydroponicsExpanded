@@ -9,15 +9,15 @@ Hydroponics Expanded adds a Small and a Medium Hydroponic Station to Survival Lo
 [size=5]Main features[/size]
 [list]
 [*][b]Two new stations[/b]: the Hydroponic Station (Small) holds one small plant and fits the Plant Grow Box (Small)'s spot. The Hydroponic Station (Medium) holds two small plants or one medium plant and fits the Plant Grow Box (Medium)'s spot. Each has its own model and icon.[/*]
-[*][b]Like the Large one[/b]: while powered, the full-spectrum grow lights make plants grow 50% faster, warm them, and keep pests, weeds and dryness away, so crops need no care until harvest. Without power the lights go out and the help stops.[/*]
+[*][b]Like the Large one[/b]: while powered, the full-spectrum grow lights make plants grow faster (50% by default), keep them warm, and keep pests, weeds and dryness away, so crops need no care until harvest. Without power the lights go out and the plants get none of that.[/*]
 [*][b]A new Large[/b]: the game's Hydroponic Station (Large) gets a new model and icon that match the new stations. One setting gives it back its old look.[/*]
-[*][b]Pots that fit the crop[/b]: each station's pots change with what is planted. Small plants get a pot in every bay. A medium plant gets one big pot over two bays, and a large plant such as corn or watermelon gets one over all four, so it grows in the middle of its pot instead of over the bay walls. The grow lights hang high enough for the tallest crop each station takes, so the Large stands about 3.2 m tall.[/*]
-[*][b]Unlock it[/b]: Planting level 3 unlocks the Small and 4 the Medium. The Large keeps the game's unlock, the Hydroponic Cultivation talent, unless you give it a level too. Getting the Large's recipe, by the talent or its level, unlocks the other two as well. A run already past a level gets the recipe when the save loads, and each level is a setting.[/*]
-[*][b]Craft it[/b]: the recipes sit at the workbench next to the Large's. The Small's package takes 1 Container, 1 Wire, 1 Electronic Components and 1 Iron Rod. The Medium's takes 1 Container, 1 Wire, 2 Electronic Components and 1 Iron Rod. Taking one down gives back about half, and a setting changes how much.[/*]
-[*][b]Or buy it[/b]: before the disaster, the flowerpot shops that sell the grow box of the same size sell 2 of each, the Small for 60 and the Medium for 100.[/*]
-[*][b]Set it your way[/b]: you set each station's power, growth boost, materials, what it gives back when taken down, shop price and shop stock, on the Mod Manager's Mods screen or in the config file. With Mod Manager 0.14.0 or newer you pick the materials from item cards, and the screen warns you if a station would give back more than its recipe costs.[/*]
-[*][b]Dye them[/b]: craft a station in any of the game's 8 colours, or dye it later like the game's furniture. The orange frame takes the colour. The tubs, steel and water stay as they are.[/*]
-[*][b]Safe to remove[/b]: the game saves each station as the grow box of its size, so a save still loads without the mod. Before you remove it, turn on the UninstallPrep setting and load your save: station packages in bags and storage become grow box packages, so nothing is lost. Then save, quit and delete HydroponicsExpanded.dll.[/*]
+[*][b]Pots that fit the crop[/b]: each station's pots change with what is planted. Small plants get a pot in every bay. A medium plant gets one big pot over two bays, and a large plant such as corn or watermelon gets one over all four, so the crop grows in the middle of its pot instead of over the bay walls. The grow lights hang high enough for the tallest crop each station takes, so the Large stands about 3.2 m tall.[/*]
+[*][b]Unlocking[/b]: reaching a Planting level unlocks each recipe, by default level 3 for the Small and level 4 for the Medium. The Large still unlocks with the game's Hydroponic Cultivation talent, unless you give it a Planting level too. Once you have the Large's recipe, the Small and Medium unlock with it. If your save is already past a level, you get the recipe when it loads. You set each level.[/*]
+[*][b]Crafting[/b]: the recipes are at the workbench next to the Large's. By default the Small's package takes 1 Container, 1 Wire, 1 Electronic Components and 1 Iron Rod, and the Medium's takes 1 Container, 1 Wire, 2 Electronic Components and 1 Iron Rod. Taking one down gives back about half by default, and a setting changes how much.[/*]
+[*][b]Shops[/b]: before the disaster, the flowerpot shops that sell a grow box also sell the station of the same size. By default each one has 2 for sale, the Small for 60 and the Medium for 100.[/*]
+[*][b]Settings[/b]: for the Small and Medium, you set their power, growth boost, materials, what they give back when taken down, shop price and shop stock, on the Mod Manager's Mods screen or in the config file. With Mod Manager 0.14.0 or newer you pick the materials from item cards, and the screen warns you if a station would give back more than its recipe costs.[/*]
+[*][b]Dye them[/b]: craft a station in any of the game's 8 colours, or dye it later like other furniture. The orange frame takes the colour. The tubs, steel and water stay as they are.[/*]
+[*][b]Safe to remove[/b]: the game saves each station as the grow box of the same size, so a save still loads without the mod. Before you remove it, turn on the UninstallPrep setting and load your save. Station packages in bags and storage become grow box packages, so nothing is lost. Then save, quit and delete HydroponicsExpanded.dll.[/*]
 [*][b]English and Chinese[/b]: every name and description comes in both.[/*]
 [/list]
 
@@ -30,7 +30,7 @@ Hydroponics Expanded adds a Small and a Medium Hydroponic Station to Survival Lo
 [/list]
 
 [size=5]Known issues[/size]
-A Large station already placed takes its new look, or its old one, the next time the save loads. The dyed Large packages keep the game's icon.
+When you change NewLook, a Large that's already placed only changes the next time you load the save. Dyed Large packages still show the old icon.
 
 [center][img]https://sldb.core-directive.com/img/mods-banner.jpg[/img]
 [size=4][url=https://www.nexusmods.com/survivallog/mods/73]Get Mod Manager[/url] to set up all your mods in game  |  [url=https://sldb.core-directive.com/en/]Open the Survival Log wiki[/url] for items, recipes and maps[/size][/center]
@@ -70,14 +70,14 @@ Open source under MIT: [url=https://github.com/AnExiledDev/SurvivalLog-Hydroponi
 [size=5]主要功能[/size]
 [list]
 [*][b]两种新水培站[/b]：全光谱水培站（小）可种一株小型植物，占用植物灯培育箱（小）的位置。全光谱水培站（中）可种两株小型植物或一株中型植物，占用植物灯培育箱（中）的位置。每种都有自己的模型和图标。[/*]
-[*][b]和大型的一样[/b]：通电时，全光谱植物灯让植物生长快一半，还能保暖，并防止虫害、杂草和干旱，作物直到收获都无需照料。断电后灯会熄灭，这些效果也随之停止。[/*]
+[*][b]和大型的一样[/b]：通电时，全光谱植物灯让植物长得更快（默认快一半），还能保暖，并防止虫害、杂草和干旱，作物直到收获都无需照料。断电后灯会熄灭，这些效果也随之停止。[/*]
 [*][b]新的大型水培站[/b]：游戏里的全光谱水培站（大）换上与新水培站相配的模型和图标。一个设置就能换回原来的样子。[/*]
-[*][b]花盆随作物变化[/b]：每台水培站的花盆会随种下的作物改变。小型植物每格一个花盆；中型植物用一个横跨两格的大花盆；玉米、西瓜这样的大型植物用一个横跨四格的大花盆，植物长在花盆正中，不会压在隔板上。植物灯挂得足够高，能容下每台水培站可种的最高作物，所以大型水培站高约 3.2 米。[/*]
-[*][b]解锁[/b]：种植等级 3 解锁小型，4 解锁中型。大型保持游戏原本的解锁方式，即「无土栽培」天赋，除非你也给它设一个等级。获得大型水培站的配方后（无论是靠天赋还是等级），另外两种也会一起解锁。已经超过某个等级的存档在读取时就会获得对应配方，每个等级都可以在设置里改。[/*]
-[*][b]可以制作[/b]：配方在工作台上，紧挨着大型水培站的配方。小型包裹需要 1 个容器、1 个铁丝、1 个电器元件和 1 个铁棍。中型需要 1 个容器、1 个铁丝、2 个电器元件和 1 个铁棍。拆除时返还大约一半材料，返还多少可以在设置里改。[/*]
-[*][b]也可以买[/b]：灾难前，出售同尺寸植物灯培育箱的花盆商店各卖 2 台，小型 60，中型 100。[/*]
-[*][b]按你的方式设置[/b]：每种水培站的耗电、生长加速、材料、拆除返还、商店价格和库存都由你决定，可以在 Mod Manager 的「模组」界面改，也可以改配置文件。用 Mod Manager 0.14.0 或更新版本时，材料用物品卡片来选，拆除返还比配方还值钱时界面会提醒你。[/*]
-[*][b]可以染色[/b]：制作时可以选 8 种颜色中的任意一种，之后也能像游戏里的家具一样再染色。橙色框架会变成所选颜色，水槽、钢件和水保持原样。[/*]
+[*][b]花盆随作物变化[/b]：每台水培站的花盆会随种下的作物改变。小型植物每格一个花盆。中型植物用一个横跨两格的大花盆，玉米、西瓜这样的大型植物用一个横跨四格的大花盆，作物长在花盆正中，不会压在隔板上。植物灯挂得足够高，能容下每台水培站可种的最高作物，所以大型水培站高约 3.2 米。[/*]
+[*][b]解锁[/b]：种植等级达到要求就会解锁配方，默认小型是 3 级，中型是 4 级。大型仍靠游戏的「无土栽培」天赋解锁，除非你也给它设一个种植等级。获得大型水培站的配方后，小型和中型也会一起解锁。如果存档已经超过某个等级，读取时就会获得对应配方。每个等级都由你设置。[/*]
+[*][b]制作[/b]：配方在工作台上，紧挨着大型水培站的配方。默认小型包裹需要 1 个容器、1 个铁丝、1 个电器元件和 1 个铁棍，中型需要 1 个容器、1 个铁丝、2 个电器元件和 1 个铁棍。拆除时默认返还大约一半材料，返还多少可以在设置里改。[/*]
+[*][b]商店[/b]：灾难前，出售植物灯培育箱的花盆商店也会出售同尺寸的水培站。默认每家各有 2 台，小型 60，中型 100。[/*]
+[*][b]设置[/b]：小型和中型水培站的耗电、生长加速、材料、拆除返还、商店价格和库存都由你决定，可以在 Mod Manager 的「模组」界面改，也可以改配置文件。用 Mod Manager 0.14.0 或更新版本时，材料用物品卡片来选，拆除返还比配方还值钱时界面会提醒你。[/*]
+[*][b]可以染色[/b]：制作时可以选 8 种颜色中的任意一种，之后也能像其他家具一样再染色。橙色框架会变成所选颜色，水槽、钢件和水保持原样。[/*]
 [*][b]可以放心移除[/b]：游戏会把每台水培站存成同尺寸的植物灯培育箱，所以移除本模组后存档仍能读取。移除前请先打开 UninstallPrep 设置并读取存档：背包和储物里的水培站包裹会变成植物灯培育箱包裹，不会丢失。然后存档、退出，再删除 HydroponicsExpanded.dll。[/*]
 [*][b]中英双语[/b]：所有名称和说明都有中文和英文。[/*]
 [/list]
@@ -91,7 +91,7 @@ Open source under MIT: [url=https://github.com/AnExiledDev/SurvivalLog-Hydroponi
 [/list]
 
 [size=5]已知问题[/size]
-已经摆好的大型水培站要在下次读档时才会换成新样子（或换回原样）。染色的大型水培站包裹仍是游戏原来的图标。
+改了 NewLook 之后，已经摆好的大型水培站要等下次读档才会变样。染色的大型水培站包裹仍显示原来的图标。
 
 [url=https://www.nexusmods.com/survivallog/mods/73]获取 Mod Manager[/url]，在游戏里设置所有模组。[url=https://sldb.core-directive.com/zh/]打开 Survival Log 维基[/url]，物品、配方、地图一查就有。
 
