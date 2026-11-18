@@ -29,7 +29,7 @@ public static class Unlocks
             keptCounts.Add(i < counts.Count ? counts[i] : 0);
         }
 
-        foreach (var (id, count) in wanted.Where(pair => pair.Count > 0))
+        foreach (var (id, count) in Stocked(wanted))
         {
             keptIds.Add(id);
             keptCounts.Add(count);
@@ -39,6 +39,9 @@ public static class Unlocks
 
         return isSame ? null : (keptIds.ToArray(), keptCounts.ToArray());
     }
+
+    /// <summary>The stations a shop lists and their stock: each one wanted with a count above 0, in the same order.</summary>
+    public static IReadOnlyList<(int Id, int Count)> Stocked(IReadOnlyList<(int Id, int Count)> wanted) => wanted.Where(pair => pair.Count > 0).ToList();
 
     /// <summary>
     /// A live shop's count of one station after the stock setting goes from <paramref name="before"/> to

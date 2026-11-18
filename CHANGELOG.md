@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.1.14
+
+- Mod Manager's Conflicts tab can now see what Hydroponics Expanded adds to the game, like the stations, their spots in the shops and the Large Station's new look, so it can show when another mod changes the same things.
+- Now needs Exiled's Toolkit 0.28.0 or newer.
+- Made for Survival Log 1.1.21271.
+
 ## 0.1.13
 
 - Clearer wording in the settings and in the stations' descriptions.

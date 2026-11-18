@@ -17,6 +17,12 @@ public class UnlocksTests
     }
 
     [Fact]
+    public void AShopListsOnlyTheStationsWithStock()
+    {
+        Assert.Equal(new[] { (920003, 1), (920001, 2) }, Unlocks.Stocked(new[] { (920003, 1), (920002, 0), (920001, 2) }));
+    }
+
+    [Fact]
     public void AShopAlreadyStockedAsSetIsLeftAlone()
     {
         Assert.Null(Unlocks.Shop(new[] { 60007, 920002 }, new[] { 3, 2 }, Ours, new[] { (920002, 2) }));

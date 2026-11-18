@@ -7,6 +7,7 @@ using Il2CppInterop.Runtime.InteropTypes;
 using HydroponicsExpanded.Core;
 using Il2CppDictionary = Il2CppSystem.Collections.Generic;
 using Il2CppInts = Il2CppSystem.Collections.Generic.List<int>;
+using ExiledToolkit;
 using ExiledToolkit.Game;
 
 namespace HydroponicsExpanded.Adapters;
@@ -17,7 +18,8 @@ namespace HydroponicsExpanded.Adapters;
 /// to the grow box of the same size. It writes again when the game loads a table afresh or a setting changes, over its
 /// own rows where they already are. It also points the Hydroponic Station (Large) at the mod's model while that setting is
 /// on, and every few seconds unlocks the stations' recipes a run has earned: each at its Planting level, and the Small and
-/// Medium along with the Large Station's.
+/// Medium along with the Large Station's. Each table write is reported to Exiled's Toolkit, so Mod Manager can tell which
+/// mod changed what.
 /// </summary>
 internal sealed class StationTables
 {
@@ -274,10 +276,17 @@ internal sealed class StationTables
             var here = wanted.Where(pair => pair.Kind.Shops.Contains(id)).Select(pair => (pair.Kind.Ids.Furniture, pair.Stock)).ToList();
             var ours = here.Select(pair => pair.Furniture).ToArray();
 
-            if (Unlocks.Shop(ToArray(shop.ItemIdList), ToArray(shop.ItemCountList), ours, here) is not { } lists) continue;
+            if (Unlocks.Shop(ToArray(shop.ItemIdList), ToArray(shop.ItemCountList), ours, here) is { } lists)
+            {
+                shop.ItemIdList = RowFields.ToList(lists.Ids);
+                shop.ItemCountList = RowFields.ToList(lists.Counts);
+            }
 
-            shop.ItemIdList = RowFields.ToList(lists.Ids);
-            shop.ItemCountList = RowFields.ToList(lists.Counts);
+            // A station with no stock is not listed. An empty list here takes back what was reported before.
+            var stocked = Unlocks.Stocked(here);
+
+            Claims.AddedTo(Plugin.Guid, nameof(Config_ShopFurniture), id, nameof(Config_ShopFurniture.ItemIdList), stocked.Select(station => station.Id));
+            Claims.AddedTo(Plugin.Guid, nameof(Config_ShopFurniture), id, nameof(Config_ShopFurniture.ItemCountList), stocked.Select(station => station.Count));
         }
     }
 
@@ -306,12 +315,31 @@ internal sealed class StationTables
 
         var look = isNewLook ? new LargeLook(StationRows.LargeResName, StationRows.LargeWebIcon, StationRows.LargeWebIcon) : _largeStock;
 
+        ReportLarge(look, isNewLook);
+
         if (station.ResName == look.ResName && station.ICON == look.Icon && package.WebIcon == look.WebIcon) return;
 
         station.ResName = look.ResName;
         station.ICON = look.Icon;
         package.WebIcon = look.WebIcon;
         _log(isNewLook ? "the Hydroponic Station (Large) has the new look" : "the Hydroponic Station (Large) has the game's look");
+    }
+
+    /// <summary>Tells Exiled's Toolkit what the mod wrote into the Large Station's rows, or that they hold the game's values again.</summary>
+    private static void ReportLarge(LargeLook look, bool isNewLook)
+    {
+        var fields = new[]
+        {
+            (nameof(Config_Furniture), StationRows.LargeFurniture, nameof(Config_Furniture.ResName), look.ResName),
+            (nameof(Config_Furniture), StationRows.LargeFurniture, nameof(Config_Furniture.ICON), look.Icon),
+            (nameof(Config_Item), StationRows.LargeItem, nameof(Config_Item.WebIcon), look.WebIcon),
+        };
+
+        foreach (var (table, row, field, value) in fields)
+        {
+            if (isNewLook) Claims.Wrote(Plugin.Guid, table, row, field, value);
+            else Claims.PutBack(Plugin.Guid, table, row, field);
+        }
     }
 
     private void KeepReveals(Il2CppDictionary.Dictionary<int, Config_ProductionList> recipes, IReadOnlyList<StationKind> kinds)
@@ -535,6 +563,7 @@ internal sealed class StationTables
 
             _table[plan.Id] = row;
             ours.Add(row.Pointer);
+            Claims.AddedRows(Plugin.Guid, typeof(T).Name, new[] { plan.Id });
 
             return refused;
         }
