@@ -12,7 +12,8 @@ namespace HydroponicsExpanded.Adapters;
 /// furniture and packed-furniture saves are hooked after they write their ids (a furniture's planter writes its plant row
 /// id inside the furniture's own save, so that is there too); the load is hooked where the game
 /// gathers a chapter's saves before creating them; moving furniture between chapters clones a save without its name,
-/// so the clone gets the marker back. Every target was checked in GameAssembly.dll: no relative jump or call in its
+/// so the clone gets the marker back. AgentManager.SaveGame keeps the chapter's list from the last load when no agent is
+/// alive at all, and that list holds the stations as loaded, so they are turned back into grow boxes there. Every target was checked in GameAssembly.dll: no relative jump or call in its
 /// first 14 bytes.
 /// </summary>
 internal static class SavePatches
@@ -29,6 +30,7 @@ internal static class SavePatches
         hooks.Patch(typeof(SavePatches), typeof(BagFurniture), "SaveGame", postfix: nameof(SaveAsStock), consequence: IfMissed);
         hooks.Patch(typeof(SavePatches), typeof(AgentManager), "DeduplicateAgentSavesForLoad", prefix: nameof(LoadAsStation), consequence: IfMissed);
         hooks.Patch(typeof(SavePatches), typeof(GameSaveManager), "CloneAgentSave", postfix: nameof(KeepMarkerOnClone), consequence: IfMissed);
+        hooks.Patch(typeof(SavePatches), typeof(AgentManager), "SaveGame", new[] { typeof(SaveChildData), typeof(int) }, postfix: nameof(ChapterAsStock), consequence: IfMissed);
     }
 
     private static void SaveAsStock(AgentSave __0)
@@ -40,6 +42,27 @@ internal static class SavePatches
             var fields = Read(__0);
 
             if (SaveTwin.ToStock(ref fields, StationRows.All)) Write(__0, fields);
+        }
+        catch (Exception ex)
+        {
+            _hooks?.Fail("saving a station as its grow box", ex);
+        }
+    }
+
+    /// <summary>
+    /// After a normal save every entry is a fresh one that is already a grow box, so nothing changes. When SaveGame
+    /// kept the list from the last load instead, its stations become grow boxes here.
+    /// </summary>
+    private static void ChapterAsStock(SaveChildData __0, int __1)
+    {
+        try
+        {
+            Il2CppAgentSaves? list = null;
+
+            if (__0?._ChapterAgentMap_k__BackingField?.TryGetValue(__1, out list) != true || list == null) return;
+
+            for (var i = 0; i < list.Count; i++)
+                if (list[i] is { } save) SaveAsStock(save);
         }
         catch (Exception ex)
         {

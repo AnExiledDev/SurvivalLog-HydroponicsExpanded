@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.1.16
+
+- The mod no longer checks the game's tables every second. It checks them only after the game loads them or you change a setting.
+- Uninstall prep now also turns station packages on the ground in your other game modes into grow box packages.
+- Stations are now saved as grow boxes in one rare case too: a save made while nothing around you is loaded.
+- Made for Survival Log 1.1.21671.
+
 ## 0.1.15
 
 - The stations' recipes now unlock right when your Planting level goes up, a run loads or an unlock setting changes. Before, the mod checked every 5 seconds whether they were due.

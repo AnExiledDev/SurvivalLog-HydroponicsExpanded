@@ -15,15 +15,15 @@ namespace HydroponicsExpanded.Adapters;
 /// <summary>
 /// Writes the stations' rows and text into the game's tables once they are loaded, then rebuilds the game's lookups
 /// that were made from them, and brings the stations into a run: the flowerpot shops before the disaster sell them next
-/// to the grow box of the same size. It writes again when the game loads a table afresh or a setting changes, over its
-/// own rows where they already are. It also points the Hydroponic Station (Large) at the mod's model while that setting is
+/// to the grow box of the same size. It writes again when the game loads a table afresh or a setting changes (see
+/// <see cref="TableWakes"/>), over its own rows where they already are. It also points the Hydroponic Station (Large) at the mod's model while that setting is
 /// on, and unlocks the stations' recipes a run has earned, when <see cref="RecipeTriggers"/> says they need checking: each at its Planting level, and the Small and
 /// Medium along with the Large Station's. Each table write is reported to Exiled's Toolkit, so Mod Manager can tell which
 /// mod changed what.
 /// </summary>
 internal sealed class StationTables
 {
-    private const float CheckSeconds = 1f;
+    private const double RetrySeconds = 1;
 
     // The six row tables, the shop lists, and the two languages.
     private const int Watched = 9;
@@ -36,20 +36,24 @@ internal sealed class StationTables
     private IReadOnlyList<StationSettings>? _appliedSettings;
     private bool? _appliedNewLook;
     private LargeLook? _largeStock;
-    private float _nextCheckAt;
+    private readonly WakeGate _gate = new(RetrySeconds);
+    private double _nextRecipeAt;
 
     public StationTables(Action<string> log)
     {
         _log = log;
     }
 
-    public void Tick(float now)
+    public void Tick(double now)
     {
-        if (now < _nextCheckAt) return;
+        if (RecipeTriggers.IsDue && now >= _nextRecipeAt)
+        {
+            _nextRecipeAt = now + RetrySeconds;
+            UnlockRecipes();
+        }
 
-        _nextCheckAt = now + CheckSeconds;
-
-        if (RecipeTriggers.IsDue) UnlockRecipes();
+        // With a hook missing, every second counts as a wake.
+        if (!_gate.IsDue(now, TableWakes.IsPolling ? (int)now : TableWakes.Count)) return;
 
         var config = GameSingleton.Existing<ConfigManager>();
         var english = config?.customCache?.EnglishLanguageMap;
@@ -57,7 +61,7 @@ internal sealed class StationTables
 
         if (config == null || english == null || chinese == null) return;
 
-        KeepDyeable(config);
+        var isDyeableStale = KeepDyeable(config);
 
         var tables = new Tables(config);
 
@@ -68,7 +72,13 @@ internal sealed class StationTables
         var settings = CurrentSettings.Current;
         var isNewLook = CurrentSettings.NewLook;
 
-        if (ReferenceEquals(settings, _appliedSettings) && isNewLook == _appliedNewLook && _seen.AsSpan().SequenceEqual(_applied)) return;
+        // A pass that finds everything as it left it is done until the next wake.
+        if (ReferenceEquals(settings, _appliedSettings) && isNewLook == _appliedNewLook && _seen.AsSpan().SequenceEqual(_applied))
+        {
+            if (!isDyeableStale) _gate.Done();
+
+            return;
+        }
 
         var isChange = _appliedSettings != null && !ReferenceEquals(settings, _appliedSettings);
 
@@ -225,11 +235,12 @@ internal sealed class StationTables
     /// starts, when the grow box or Large Station it stands in for is on it, and makes the game rebuild its lookup from
     /// it. A few lookups a second while they are there.
     /// </summary>
-    private void KeepDyeable(ConfigManager config)
+    /// <summary>Returns whether it had to fix the game's dyeable lists, so the next pass checks them again.</summary>
+    private bool KeepDyeable(ConfigManager config)
     {
         var names = config._dyeableResNames;
 
-        if (names == null) return;
+        if (names == null) return false;
 
         var stale = false;
 
@@ -246,11 +257,13 @@ internal sealed class StationTables
             foreach (var kind in StationRows.All)
                 if (furniture.ContainsKey(kind.Ids.Furniture) && !ids.Contains(kind.Ids.Furniture)) stale = true;
 
-        if (!stale) return;
+        if (!stale) return false;
 
         // The game rebuilds its list of dyeable ids when this no longer points at the furniture table.
         config._dyeableSourceDict = null;
         _log("the stations can be dyed like the furniture they stand in for");
+
+        return true;
     }
 
     /// <summary>Lists each station in the shops that sell its grow box, with its stock, or takes it off when its stock is 0.</summary>

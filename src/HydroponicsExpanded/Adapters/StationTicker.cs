@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using ExiledToolkit.Kit;
 using UnityEngine;
 
 namespace HydroponicsExpanded.Adapters;
@@ -9,7 +10,7 @@ public sealed class StationTicker : MonoBehaviour
 {
     private const int MaxReportedFailures = 10;
 
-    internal static Action<float> Check = _ => { };
+    internal static Action<double> Check = _ => { };
     internal static Action<string> Log = _ => { };
     private static readonly HashSet<string> ReportedFailures = new();
 
@@ -21,7 +22,7 @@ public sealed class StationTicker : MonoBehaviour
     {
         try
         {
-            Check(Time.realtimeSinceStartup);
+            Check(Clock.Now);
         }
         catch (Exception ex)
         {

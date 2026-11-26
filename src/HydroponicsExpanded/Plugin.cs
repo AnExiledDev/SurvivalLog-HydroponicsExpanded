@@ -15,7 +15,7 @@ namespace HydroponicsExpanded;
 public sealed class Plugin : BasePlugin
 {
     internal const string Guid = "com.dev.survivallog.hydroponicsexpanded";
-    private const string Version = "0.1.15";
+    private const string Version = "0.1.16";
 
     /// <summary>Exiled's Toolkit: applies each setting as soon as it changes, and reads the game's singletons safely.</summary>
     private const string ToolkitGuid = "com.dev.survivallog.exiledtoolkit";
@@ -50,7 +50,11 @@ public sealed class Plugin : BasePlugin
         // The Mod Manager asks right after it writes a value, before the live watch has copied it over, so read the
         // config itself.
         ModManagerAnswers.Settings = () => StationRows.All.Select(kind => _reads[kind]()).ToList();
-        LiveSettings.Watch(newLook, isOn => CurrentSettings.NewLook = isOn);
+        LiveSettings.Watch(newLook, isOn =>
+        {
+            CurrentSettings.NewLook = isOn;
+            TableWakes.Wake();
+        });
         LiveSettings.Watch(_uninstallPrep, isOn =>
         {
             UninstallPrep.Set(isOn);
@@ -64,6 +68,7 @@ public sealed class Plugin : BasePlugin
 
         SavePatches.Apply(hooks);
         RecipeTriggers.Apply(hooks);
+        TableWakes.Apply(hooks);
         ShopStock.Apply(hooks);
         StationModel.Apply(hooks, message => Log.LogInfo(message));
 
@@ -141,7 +146,11 @@ public sealed class Plugin : BasePlugin
         StationSettings Read() => new(power.Value, growth.Value, materials.Value, price.Value, _uninstallPrep!.Value ? 0 : stock.Value, _returnPercent!.Value, returns.Value);
 
         _reads[kind] = Read;
-        LiveSettings.Watch(() => CurrentSettings.Set(kind, Read()), power, growth, materials, returns, price, stock, _uninstallPrep!, _returnPercent!);
+        LiveSettings.Watch(() =>
+        {
+            CurrentSettings.Set(kind, Read());
+            TableWakes.Wake();
+        }, power, growth, materials, returns, price, stock, _uninstallPrep!, _returnPercent!);
     }
 
     private ConfigEntry<bool>? _uninstallPrep;

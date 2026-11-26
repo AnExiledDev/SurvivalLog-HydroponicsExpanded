@@ -18,15 +18,15 @@ namespace HydroponicsExpanded.Adapters;
 /// </summary>
 internal static class UninstallPrep
 {
-    private const float LiveSeconds = 3f;
-    private const float SavedSeconds = 30f;
+    private const double LiveSeconds = 3;
+    private const double SavedSeconds = 30;
 
     private static readonly HashSet<long> Touched = new();
     private static readonly List<KeyValuePair<int, int>> Records = new();
 
     private static volatile bool _isOn;
-    private static float _nextLiveAt;
-    private static float _nextSavedAt;
+    private static double _nextLiveAt;
+    private static double _nextSavedAt;
     private static IntPtr _sweptSave;
 
     internal static Action<string> Log = _ => { };
@@ -42,7 +42,7 @@ internal static class UninstallPrep
         _nextSavedAt = 0;
     }
 
-    public static void Tick(float now)
+    public static void Tick(double now)
     {
         if (!_isOn || now < _nextLiveAt) return;
 
@@ -147,8 +147,9 @@ internal static class UninstallPrep
     }
 
     /// <summary>
-    /// The save's copy of every place: the packages held by each thing saved there and its shop stock, and the shops'
-    /// stock record. The place loaded now is written over from the live game when it is saved, which the sweep above
+    /// The save's copy of every place: the packages held by each thing saved there and its shop stock, the shops'
+    /// stock record, and the packages lying on the ground in the other game modes (DropItemManager.SaveGame keeps
+    /// those as they were). The place loaded now is written over from the live game when it is saved, which the sweep above
     /// has already changed.
     /// </summary>
     private static int Saved(SaveChildData save)
@@ -165,6 +166,10 @@ internal static class UninstallPrep
                 foreach (var agent in chapter)
                     if (agent != null) count += Agent(agent);
             }
+
+        if (save._DropItemSaveList_k__BackingField is { } drops)
+            foreach (var drop in drops)
+                if (drop != null) count += Items(drop._ItemList_k__BackingField);
 
         if (save._BuildShopStockSnapshot_k__BackingField is { } snapshots)
             foreach (var stock in snapshots.Values)
