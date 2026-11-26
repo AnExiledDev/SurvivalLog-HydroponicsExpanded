@@ -46,7 +46,7 @@ Then delete `HydroponicsExpanded.dll` from the `BepInEx\plugins` folder. To remo
 
 ## Requirements
 
-- Survival Log 1.1.20719.
+- Survival Log 1.1.21671.
 - BepInEx for Survival Log.
 - [Exiled's Toolkit](https://github.com/AnExiledDev/SurvivalLog-ExiledToolkit) 0.28.0 or newer. Hydroponics Expanded does not load without it. It applies settings changed on the Mod Manager's Mods screen without a restart.
 - Optional: [Mod Manager](https://www.nexusmods.com/survivallog/mods/73). With it, you can change every setting in game on its Mods screen and see what each one does, without opening the config file. Each station's materials and what it gives back when taken down show as item cards with the item's picture and name: pick an item from a list and set how many, with no item ids to look up.

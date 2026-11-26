@@ -17,14 +17,13 @@ namespace HydroponicsExpanded.Adapters;
 /// that were made from them, and brings the stations into a run: the flowerpot shops before the disaster sell them next
 /// to the grow box of the same size. It writes again when the game loads a table afresh or a setting changes, over its
 /// own rows where they already are. It also points the Hydroponic Station (Large) at the mod's model while that setting is
-/// on, and every few seconds unlocks the stations' recipes a run has earned: each at its Planting level, and the Small and
+/// on, and unlocks the stations' recipes a run has earned, when <see cref="RecipeTriggers"/> says they need checking: each at its Planting level, and the Small and
 /// Medium along with the Large Station's. Each table write is reported to Exiled's Toolkit, so Mod Manager can tell which
 /// mod changed what.
 /// </summary>
 internal sealed class StationTables
 {
     private const float CheckSeconds = 1f;
-    private const float RevealSeconds = 5f;
 
     // The six row tables, the shop lists, and the two languages.
     private const int Watched = 9;
@@ -38,7 +37,6 @@ internal sealed class StationTables
     private bool? _appliedNewLook;
     private LargeLook? _largeStock;
     private float _nextCheckAt;
-    private float _nextRevealAt;
 
     public StationTables(Action<string> log)
     {
@@ -47,15 +45,11 @@ internal sealed class StationTables
 
     public void Tick(float now)
     {
-        if (now >= _nextRevealAt)
-        {
-            _nextRevealAt = now + RevealSeconds;
-            UnlockRecipes();
-        }
-
         if (now < _nextCheckAt) return;
 
         _nextCheckAt = now + CheckSeconds;
+
+        if (RecipeTriggers.IsDue) UnlockRecipes();
 
         var config = GameSingleton.Existing<ConfigManager>();
         var english = config?.customCache?.EnglishLanguageMap;
@@ -186,6 +180,7 @@ internal sealed class StationTables
         Step("shop lists", () => AddToShops(tables.Shops, written.Select(done => (done.Kind, done.Settings.ShopStock)).ToList()));
         ShopStock.Restock(written.Select(done => (done.Kind.Ids.Furniture, done.Settings.ShopStock)).ToList());
         KeepReveals(recipes, kinds);
+        RecipeTriggers.MarkDue();
 
         foreach (var (kind, wanted, materials) in written)
         {
@@ -353,7 +348,8 @@ internal sealed class StationTables
     /// <summary>
     /// Unlocks each station's recipe once the run has earned it (see <see cref="Unlocks.RecipesDue"/>), in a run already
     /// going too, and lists an unlocked one again at the workbench after its materials setting changed, since the game
-    /// lists a recipe by its materials. Uninstall prep stops it, so the recipes it takes back stay gone.
+    /// lists a recipe by its materials. Uninstall prep stops it, so the recipes it takes back stay gone. Until a run is
+    /// going, the check stays due and is tried again at the next table check.
     /// </summary>
     private void UnlockRecipes()
     {
@@ -366,6 +362,8 @@ internal sealed class StationTables
             var skills = world?._ProficiencyManager;
 
             if (tool == null || skills == null) return;
+
+            RecipeTriggers.MarkDone();
 
             var unlocked = new HashSet<int>();
             var list = tool._CraftUnlockedProductionIds_k__BackingField;
@@ -404,6 +402,7 @@ internal sealed class StationTables
         catch (Exception ex)
         {
             _reveals.Clear();
+            RecipeTriggers.MarkDone();
             _log($"cannot unlock the stations' recipes, so only the game's unlocks apply: {ex}");
         }
     }

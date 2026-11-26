@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.1.15
+
+- The stations' recipes now unlock right when your Planting level goes up, a run loads or an unlock setting changes. Before, the mod checked every 5 seconds whether they were due.
+- Made for Survival Log 1.1.21671.
+
 ## 0.1.14
 
 - Mod Manager's Conflicts tab can now see what Hydroponics Expanded adds to the game, like the stations, their spots in the shops and the Large Station's new look, so it can show when another mod changes the same things.

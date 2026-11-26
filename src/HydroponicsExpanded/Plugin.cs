@@ -15,7 +15,7 @@ namespace HydroponicsExpanded;
 public sealed class Plugin : BasePlugin
 {
     internal const string Guid = "com.dev.survivallog.hydroponicsexpanded";
-    private const string Version = "0.1.14";
+    private const string Version = "0.1.15";
 
     /// <summary>Exiled's Toolkit: applies each setting as soon as it changes, and reads the game's singletons safely.</summary>
     private const string ToolkitGuid = "com.dev.survivallog.exiledtoolkit";
@@ -35,7 +35,11 @@ public sealed class Plugin : BasePlugin
             "The Planting level that unlocks the Hydroponic Station (Large)'s recipe, which also unlocks the Small and Medium ones. At 0, the default, only the game's Hydroponic Cultivation talent unlocks it. A save already at this level gets the recipe when it loads.\n" +
             "种植等级达到多少时解锁全光谱水培站（大）的配方，同时也会解锁小型和中型水培站的配方。0（默认）表示只有游戏的「无土栽培」天赋能解锁它。已经达到这个等级的存档在读取时就会获得配方。",
             new AcceptableValueRange<int>(0, Unlocks.TopPlantingLevel)));
-        LiveSettings.Watch(largeUnlock, level => CurrentSettings.LargeUnlockLevel = level);
+        LiveSettings.Watch(largeUnlock, level =>
+        {
+            CurrentSettings.LargeUnlockLevel = level;
+            RecipeTriggers.MarkDue();
+        });
 
         _returnPercent = Config.Bind("Dismantle", "ReturnPercent", MaterialList.DefaultReturnPercent, new ConfigDescription(
             "How much of its materials a station gives back when you take it down, as a percent of its recipe. 50 is about half, like other furniture in the game. 0 gives nothing back and 100 gives back everything. The total is rounded down, but it is always at least one item unless this is 0. A station whose Returns list is filled in gives back that list instead.\n" +
@@ -50,6 +54,7 @@ public sealed class Plugin : BasePlugin
         LiveSettings.Watch(_uninstallPrep, isOn =>
         {
             UninstallPrep.Set(isOn);
+            RecipeTriggers.MarkDue();
             if (isOn) Log.LogInfo("Uninstall prep is on: load a save to turn the station packages into grow box packages");
         });
 
@@ -58,6 +63,7 @@ public sealed class Plugin : BasePlugin
         var iconPlaced = false;
 
         SavePatches.Apply(hooks);
+        RecipeTriggers.Apply(hooks);
         ShopStock.Apply(hooks);
         StationModel.Apply(hooks, message => Log.LogInfo(message));
 
@@ -125,7 +131,11 @@ public sealed class Plugin : BasePlugin
             $"种植等级达到多少时解锁{chinese}的配方。获得全光谱水培站（大）的配方后（无论是靠等级还是「无土栽培」天赋），不管种植等级多少都会一起解锁它。0 表示只随全光谱水培站（大）的配方解锁。已经达到这个等级的存档在读取时就会获得配方。",
             new AcceptableValueRange<int>(0, Unlocks.TopPlantingLevel)));
 
-        LiveSettings.Watch(unlock, level => CurrentSettings.SetUnlockLevel(kind, level));
+        LiveSettings.Watch(unlock, level =>
+        {
+            CurrentSettings.SetUnlockLevel(kind, level);
+            RecipeTriggers.MarkDue();
+        });
 
         // Uninstall prep holds the stock at 0, so the shops stop listing the station.
         StationSettings Read() => new(power.Value, growth.Value, materials.Value, price.Value, _uninstallPrep!.Value ? 0 : stock.Value, _returnPercent!.Value, returns.Value);
